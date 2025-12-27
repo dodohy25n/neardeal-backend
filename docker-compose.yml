@@ -1,0 +1,24 @@
+services:
+  # 1. MySQL 컨테이너
+  neardeal-db:
+    image: mysql:8.0
+    container_name: neardeal-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "0000"
+      MYSQL_DATABASE: wsd
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./db_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # 2. Redis 컨테이너
+  neardeal-redis:
+    image: redis:alpine
+    container_name: neardeal-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data
