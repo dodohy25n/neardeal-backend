@@ -2,6 +2,9 @@ package com.neardeal.domain.review.service;
 
 import com.neardeal.common.exception.CustomException;
 import com.neardeal.common.exception.ErrorCode;
+import com.neardeal.domain.coupon.entity.CouponUsageStatus;
+import com.neardeal.domain.coupon.entity.CustomerCoupon;
+import com.neardeal.domain.coupon.repository.CustomerCouponRepository;
 import com.neardeal.domain.review.dto.CreateReviewRequest;
 import com.neardeal.domain.review.dto.ReviewResponse;
 import com.neardeal.domain.review.dto.ReviewStatsResponse;
@@ -24,6 +27,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
+    private final CustomerCouponRepository customerCouponRepository;
 
     @Transactional
     public Long createReview(User user, Long storeId, CreateReviewRequest request) {
@@ -34,14 +38,15 @@ public class ReviewService {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 해당 상점에 대한 리뷰를 작성했습니다.");
         }
 
+        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store, CouponUsageStatus.USED);
+
         Review review = Review.builder()
                 .user(user)
                 .store(store)
                 .content(request.getContent())
                 .rating(request.getRating())
-                .customerCoupon(null)
+                .isVerified(isVerified)
                 .parentReview(null)
-                .isPrivate(false)
                 .build();
 
         reviewRepository.save(review);
@@ -51,13 +56,17 @@ public class ReviewService {
     @Transactional
     public void updateReview(Long reviewId, User user, UpdateReviewRequest request) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND, "리뷰를 찾을 수 없습니다."));
+
 
         if (!review.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        review.updateReview(request.getContent(), request.getRating());
+        Store store = review.getStore();
+        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store, CouponUsageStatus.USED);
+
+        review.updateReview(request.getContent(), request.getRating(), isVerified);
     }
 
     @Transactional

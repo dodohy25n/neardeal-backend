@@ -30,7 +30,7 @@ public class AuthManageService {
     public void deleteToken(Long userId) {
         String key = PREFIX + userId;
         if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
-            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 사용자의 토큰이 존재하지 않습니다.");
+            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 사용자의 토큰을 찾을 수 없습니다.");
         }
         redisTemplate.delete(key);
     }

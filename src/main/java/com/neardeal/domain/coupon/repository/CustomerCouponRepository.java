@@ -2,6 +2,7 @@ package com.neardeal.domain.coupon.repository;
 
 import com.neardeal.domain.coupon.entity.CouponUsageStatus;
 import com.neardeal.domain.coupon.entity.CustomerCoupon;
+import com.neardeal.domain.store.entity.Store;
 import com.neardeal.domain.user.entity.User;
 import com.neardeal.domain.coupon.entity.Coupon;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,8 @@ public interface CustomerCouponRepository extends JpaRepository<CustomerCoupon, 
             @Param("code") String code,
             @Param("status") CouponUsageStatus status
     );
+
+    // 해당 유저가 특정 상점에서 쿠폰을 사용한 적이 있는가? (리뷰 검증용)
+    boolean existsByUserAndCoupon_StoreAndStatus(User user, Store store, CouponUsageStatus status);
 
 }

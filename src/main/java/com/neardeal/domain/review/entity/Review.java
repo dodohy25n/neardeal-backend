@@ -26,13 +26,12 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_coupon_id", nullable = true, unique = true)
-    private CustomerCoupon customerCoupon; // 사용 완료한 쿠폰 ID (실제 구매자 증명 용도)
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_review_id")
     private Review parentReview; // 답글인 경우 원본 리뷰 ID
+
+    @Column(nullable = false)
+    private boolean isVerified; // 구매인증여부 (쿠폰사용여부로 판단)
 
     @Column(nullable = false)
     private int rating;
@@ -40,26 +39,25 @@ public class Review extends BaseEntity {
     @Lob
     private String content;
 
-    private boolean isPrivate;
-
     @Builder
-    public Review(User user, Store store, CustomerCoupon customerCoupon, Review parentReview, int rating,
-            String content, boolean isPrivate) {
+    public Review(User user, Store store, Review parentReview, boolean isVerified, int rating, String content) {
         this.user = user;
         this.store = store;
-        this.customerCoupon = customerCoupon;
         this.parentReview = parentReview;
+        this.isVerified = isVerified;
         this.rating = rating;
         this.content = content;
-        this.isPrivate = isPrivate;
     }
 
-    public void updateReview(String content, Integer rating) {
+    public void updateReview(String content, Integer rating, Boolean isVerified) {
         if (content != null) {
             this.content = content;
         }
         if (rating != null) {
             this.rating = rating;
+        }
+        if (isVerified != null) {
+            this.isVerified = isVerified;
         }
     }
 }
