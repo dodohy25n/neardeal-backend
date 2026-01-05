@@ -3,17 +3,16 @@ package com.neardeal.domain.review.service;
 import com.neardeal.common.exception.CustomException;
 import com.neardeal.common.exception.ErrorCode;
 import com.neardeal.domain.coupon.entity.CouponUsageStatus;
-import com.neardeal.domain.coupon.entity.CustomerCoupon;
 import com.neardeal.domain.coupon.repository.CustomerCouponRepository;
-import com.neardeal.domain.review.dto.CreateReviewRequest;
-import com.neardeal.domain.review.dto.ReviewResponse;
-import com.neardeal.domain.review.dto.ReviewStatsResponse;
-import com.neardeal.domain.review.dto.UpdateReviewRequest;
+import com.neardeal.domain.review.dto.*;
 import com.neardeal.domain.review.entity.Review;
+import com.neardeal.domain.review.entity.ReviewReport;
+import com.neardeal.domain.review.repository.ReviewReportRepository;
 import com.neardeal.domain.review.repository.ReviewRepository;
 import com.neardeal.domain.store.entity.Store;
 import com.neardeal.domain.store.repository.StoreRepository;
 import com.neardeal.domain.user.entity.User;
+import com.neardeal.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +27,8 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
     private final CustomerCouponRepository customerCouponRepository;
+    private final UserRepository userRepository;
+    private final ReviewReportRepository reviewReportRepository;
 
     @Transactional
     public Long createReview(User user, Long storeId, CreateReviewRequest request) {
@@ -107,5 +108,23 @@ public class ReviewService {
                 .rating4Count(rating4 != null ? rating4 : 0L)
                 .rating5Count(rating5 != null ? rating5 : 0L)
                 .build();
+    }
+
+    // 리뷰 신고
+    @Transactional
+    public void reportReview(Long reviewId, Long reporterId, ReportRequest request) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "존재하지 않는 리뷰입니다."));
+
+        User reporter = userRepository.getReferenceById(reporterId);
+
+        if (reviewReportRepository.existsByReviewAndReporter(review, reporter)) {
+            throw new CustomException(ErrorCode.STATE_CONFLICT, "이미 신고한 리뷰입니다.");
+        }
+
+        ReviewReport report = new ReviewReport(review, reporter, request.getReason(), request.getDetail());
+        reviewReportRepository.save(report);
+
+        review.increaseReportCount();
     }
 }

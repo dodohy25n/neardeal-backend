@@ -1,7 +1,6 @@
 package com.neardeal.domain.review.entity;
 
 import com.neardeal.common.entity.BaseEntity;
-import com.neardeal.domain.coupon.entity.CustomerCoupon;
 import com.neardeal.domain.store.entity.Store;
 import com.neardeal.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -39,6 +38,13 @@ public class Review extends BaseEntity {
     @Lob
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReviewStatus status;
+
+    @Column(nullable = false)
+    private int reportCount;
+
     @Builder
     public Review(User user, Store store, Review parentReview, boolean isVerified, int rating, String content) {
         this.user = user;
@@ -47,6 +53,8 @@ public class Review extends BaseEntity {
         this.isVerified = isVerified;
         this.rating = rating;
         this.content = content;
+        this.status = ReviewStatus.PUBLISHED; // 리뷰 첫 생성 시 바로 등록
+        this.reportCount = 0;                 // 리뷰 첫 생성 시 신고 수는 0
     }
 
     public void updateReview(String content, Integer rating, Boolean isVerified) {
@@ -60,4 +68,20 @@ public class Review extends BaseEntity {
             this.isVerified = isVerified;
         }
     }
+
+    // 리뷰 신고 접수
+    public void increaseReportCount() {
+        this.reportCount++;
+
+        // 신고가 10건 이상 누적되면 REPORTED 상태로 변경
+        if (this.reportCount >= 10 && this.status == ReviewStatus.PUBLISHED) {
+            this.status = ReviewStatus.REPORTED;
+        }
+    }
+
+    // 리뷰 비활성화 (관리자용)
+    public void banByAdmin() {
+        this.status = ReviewStatus.BANNED;
+    }
+
 }

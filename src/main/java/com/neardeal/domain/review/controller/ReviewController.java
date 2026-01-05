@@ -3,10 +3,7 @@ package com.neardeal.domain.review.controller;
 import com.neardeal.common.response.CommonResponse;
 import com.neardeal.common.response.PageResponse;
 import com.neardeal.common.response.SwaggerErrorResponse;
-import com.neardeal.domain.review.dto.CreateReviewRequest;
-import com.neardeal.domain.review.dto.ReviewResponse;
-import com.neardeal.domain.review.dto.ReviewStatsResponse;
-import com.neardeal.domain.review.dto.UpdateReviewRequest;
+import com.neardeal.domain.review.dto.*;
 import com.neardeal.domain.review.service.ReviewService;
 import com.neardeal.security.details.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -102,5 +99,19 @@ public class ReviewController {
                         @Parameter(description = "상점 ID") @PathVariable Long storeId) {
                 ReviewStatsResponse response = reviewService.getReviewStats(storeId);
                 return ResponseEntity.ok(CommonResponse.success(response));
+        }
+
+        @Operation(summary = "[공통] 리뷰 신고 ", description = "특정 리뷰를 신고합니다.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "리뷰 신고 성공"),
+                @ApiResponse(responseCode = "404", description = "리뷰 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+        })
+        @PostMapping("/reviews/{reviewId}/reports")
+        public ResponseEntity<CommonResponse<Void>> reportReview(
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
+                @Parameter(description = "리뷰 ID") @PathVariable Long reviewId,
+                @RequestBody @Valid ReportRequest request) {
+                reviewService.reportReview(reviewId, principalDetails.getUser().getId(), request);
+                return ResponseEntity.ok(CommonResponse.success(null));
         }
 }
