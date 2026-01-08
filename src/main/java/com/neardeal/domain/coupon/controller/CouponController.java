@@ -84,7 +84,7 @@ public class CouponController {
         public ResponseEntity<CommonResponse<Void>> verifyCoupon(
                 @Parameter(description = "상점 ID") @PathVariable Long storeId,
                 @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
-                @RequestBody @Valid CouponVerifyRequest request) {
+                @RequestBody @Valid VerifyCouponRequest request) {
 
                 couponService.verifyAndUseCoupon(storeId, principalDetails.getUser(), request.getCode());
                 return ResponseEntity.ok(CommonResponse.success(null));

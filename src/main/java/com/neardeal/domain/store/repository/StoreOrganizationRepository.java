@@ -14,4 +14,6 @@ public interface StoreOrganizationRepository extends JpaRepository<StoreOrganiza
             "JOIN FETCH o.university " +
             "ORDER BY so.id DESC")
     List<StoreOrganization> findAllWithStoreAndOrganization();
+
+    boolean existsByStoreIdAndOrganizationId(Long storeId, Long organizationId);
 }

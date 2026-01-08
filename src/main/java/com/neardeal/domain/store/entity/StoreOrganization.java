@@ -28,9 +28,10 @@ public class StoreOrganization {
     private String benefit;
 
     @Builder
-    public StoreOrganization(Store store, Organization organization) {
+    public StoreOrganization(Store store, Organization organization, String benefit) {
         this.store = store;
         this.organization = organization;
+        this.benefit = benefit;
     }
 
     public void updateBenefit(String benefit) {
