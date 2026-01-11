@@ -5,6 +5,9 @@ import com.neardeal.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,10 +19,6 @@ public class Store extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // Owner
 
     @Column(nullable = false)
     private String name;
@@ -41,6 +40,14 @@ public class Store extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StoreCategory storeCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // Owner
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoreImage> images = new ArrayList<>();
+
 
     @Builder
     public Store(User user, String name, String address, Double latitude, Double longitude, String phoneNumber,
@@ -82,5 +89,14 @@ public class Store extends BaseEntity {
         if (storeCategory != null) {
             this.storeCategory = storeCategory;
         }
+    }
+
+    // 연관관계 편의 메서드
+    public void addImage(StoreImage image) {
+        this.images.add(image);
+    }
+
+    public void removeImage(StoreImage image) {
+        this.images.remove(image);
     }
 }

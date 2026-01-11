@@ -35,17 +35,17 @@ public class ItemController {
 
         @Operation(summary = "[점주] 상품 등록", description = "상점에 새로운 상품을 등록합니다. (본인 상점만 가능)")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "201", description = "상품 등록 성공"),
-                        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
-                        @ApiResponse(responseCode = "403", description = "권한 없음 (본인 소유 상점 아님)", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
-                        @ApiResponse(responseCode = "404", description = "상점 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+                @ApiResponse(responseCode = "201", description = "상품 등록 성공"),
+                @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
+                @ApiResponse(responseCode = "403", description = "권한 없음 (본인 소유 상점 아님)", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
+                @ApiResponse(responseCode = "404", description = "상점 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
         })
         @PostMapping("/stores/{storeId}/items")
         public ResponseEntity<CommonResponse<Long>> createItem(
-                        @Parameter(description = "상품 ID") @PathVariable Long storeId,
-                        @Parameter(description = "상품 이미지") @RequestPart MultipartFile image,
-                        @RequestPart @Valid CreateItemRequest request,
-                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
+                @Parameter(description = "상품 ID") @PathVariable Long storeId,
+                @Parameter(description = "상품 이미지") @RequestPart MultipartFile image,
+                @RequestPart @Valid CreateItemRequest request
         ) throws IOException {
                 Long itemId = itemService.createItem(storeId, principalDetails.getUser(), request, image);
                 return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(itemId));
@@ -53,11 +53,11 @@ public class ItemController {
 
         @Operation(summary = "[공통] 상점별 상품 목록 조회", description = "특정 상점의 모든 상품을 조회합니다.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "성공"),
-                        @ApiResponse(responseCode = "404", description = "상점 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+                @ApiResponse(responseCode = "200", description = "성공"),
+                @ApiResponse(responseCode = "404", description = "상점 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
         })
         @GetMapping("/stores/{storeId}/items")
-        public ResponseEntity<CommonResponse<List<ItemResponse>>> getItems(
+        public ResponseEntity<CommonResponse<List<ItemResponse>>> getItems (
                         @Parameter(description = "상점 ID") @PathVariable Long storeId) {
                 List<ItemResponse> response = itemService.getItems(storeId);
                 return ResponseEntity.ok(CommonResponse.success(response));
@@ -65,8 +65,8 @@ public class ItemController {
 
         @Operation(summary = "[공통] 상품 단건 조회", description = "상품 ID로 상품의 상세 정보를 조회합니다.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "성공"),
-                        @ApiResponse(responseCode = "404", description = "상품 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+                @ApiResponse(responseCode = "200", description = "성공"),
+                @ApiResponse(responseCode = "404", description = "상품 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
         })
         @GetMapping("/items/{itemId}")
         public ResponseEntity<CommonResponse<ItemResponse>> getItem(

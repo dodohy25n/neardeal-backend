@@ -25,7 +25,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "Store", description = "상점 관련 API")
@@ -38,16 +40,18 @@ public class StoreController {
 
         @Operation(summary = "[점주] 상점 등록", description = "새로운 상점을 등록합니다.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "201", description = "상점 등록 성공"),
-                        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
-                        @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
-                        @ApiResponse(responseCode = "409", description = "이미 존재하는 상점 이름", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+                @ApiResponse(responseCode = "201", description = "상점 등록 성공"),
+                @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
+                @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
+                @ApiResponse(responseCode = "409", description = "이미 존재하는 상점 이름", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
         })
         @PostMapping
         public ResponseEntity<CommonResponse<Long>> createStore(
-                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
-                        @RequestBody @Valid CreateStoreRequest request) {
-                Long storeId = storeService.createStore(principalDetails.getUser(), request);
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
+                @Parameter(description = "상품 이미지 목록") @RequestPart List<MultipartFile> images,
+                @RequestPart @Valid CreateStoreRequest request
+        ) throws IOException {
+                Long storeId = storeService.createStore(principalDetails.getUser(), request, images);
                 return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(storeId));
         }
 
@@ -85,11 +89,24 @@ public class StoreController {
         })
         @PatchMapping("/{storeId}")
         public ResponseEntity<CommonResponse<Void>> updateStore(
-                        @Parameter(description = "상점 ID") @PathVariable Long storeId,
-                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
-                        @RequestBody @Valid UpdateStoreRequest request) {
-                storeService.updateStore(storeId, principalDetails.getUser(), request);
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
+                @Parameter(description = "상점 ID") @PathVariable Long storeId,
+                @RequestPart @Valid UpdateStoreRequest request,
+                @RequestPart List<MultipartFile> images
+        ) throws IOException {
+                storeService.updateStore(storeId, principalDetails.getUser(), request, images);
                 return ResponseEntity.ok(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[점주] 상점 이미지 개별 삭제", description = "상점의 특정 이미지를 삭제합니다.")
+        @DeleteMapping("/{storeId}/images/{imageId}")
+        public ResponseEntity<CommonResponse<Void>> deleteStoreImage(
+                @PathVariable Long storeId,
+                @PathVariable Long imageId,
+                @AuthenticationPrincipal PrincipalDetails principalDetails
+        ) {
+                storeService.deleteStoreImage(storeId, imageId, principalDetails.getUser());
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonResponse.success(null));
         }
 
         @Operation(summary = "[점주] 상점 삭제", description = "상점을 삭제합니다. (본인 상점만 가능)")

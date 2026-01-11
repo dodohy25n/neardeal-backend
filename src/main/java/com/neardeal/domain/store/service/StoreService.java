@@ -1,5 +1,6 @@
 package com.neardeal.domain.store.service;
 
+import com.neardeal.common.service.S3Service;
 import com.neardeal.domain.store.entity.StoreCategory;
 
 import com.neardeal.common.exception.CustomException;
@@ -9,6 +10,7 @@ import com.neardeal.domain.store.dto.CreateStoreRequest;
 import com.neardeal.domain.store.dto.StoreResponse;
 import com.neardeal.domain.store.dto.UpdateStoreRequest;
 import com.neardeal.domain.store.entity.Store;
+import com.neardeal.domain.store.entity.StoreImage;
 import com.neardeal.domain.store.repository.StoreRepository;
 import com.neardeal.domain.user.entity.Role;
 import com.neardeal.domain.user.repository.UserRepository;
@@ -19,7 +21,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,26 +35,29 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     @Transactional
-    public Long createStore(User user, CreateStoreRequest request) {
+    public Long createStore(User user, CreateStoreRequest request, List<MultipartFile> images) throws IOException {
 
         User owner = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (owner.getRole() != Role.ROLE_OWNER) {
-            log.warn("[CreateStore] Forbidden access. userId={}, role={}", user.getId(), owner.getRole());
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
         if (storeRepository.existsByName(request.getName())) {
-            log.warn("[CreateStore] Duplicate store name: {}", request.getName());
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 존재하는 상점 이름입니다.");
         }
 
         Store store = request.toEntity(owner);
+
+        // 이미지 S3 업로드 및 리스트 순서대로 DB 저장
+        uploadAndSaveImages(store, images);
+
         Store savedStore = storeRepository.save(store);
-        log.info("[CreateStore] Success. storeId={}, ownerId={}", savedStore.getId(), owner.getId());
+
         return savedStore.getId();
     }
 
@@ -79,7 +86,7 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStore(Long storeId, User user, UpdateStoreRequest request) {
+    public void updateStore(Long storeId, User user, UpdateStoreRequest request, List<MultipartFile> images) throws IOException {
         User owner = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -104,10 +111,53 @@ public class StoreService {
                 request.getPhoneNumber(),
                 request.getIntroduction(),
                 request.getOperatingHours(),
-                request.getStoreCategory());
-        log.info("[UpdateStore] Success. storeId={}", storeId);
+                request.getStoreCategory()
+        );
+
+        // 새 이미지가 존재하면 기존 것 모두 삭제 후 새로 등록
+        if (images != null && !images.isEmpty()) {
+
+            // S3 파일 삭제
+            for (StoreImage oldImage : store.getImages()) {
+                s3Service.deleteFile(oldImage.getImageUrl());
+            }
+            
+            // DB 삭제
+            store.getImages().clear();
+
+            // 새 이미지 업로드
+            uploadAndSaveImages(store, images);
+        }
     }
 
+    // 상점 이미지 개별 삭제
+    @Transactional
+    public void deleteStoreImage(Long storeId, Long imageId, User user) {
+        User owner = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "가게를 찾을 수 없습니다."));
+
+        // 본인 소유 확인
+        if (!Objects.equals(store.getUser().getId(), owner.getId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN, "본인 소유의 가게가 아닙니다.");
+        }
+
+        // 삭제할 이미지 찾기
+        StoreImage targetImage = store.getImages().stream()
+                .filter(img -> img.getId().equals(imageId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 이미지가 존재하지 않습니다."));
+
+        // S3 삭제
+        s3Service.deleteFile(targetImage.getImageUrl());
+
+        // DB 삭제
+        store.removeImage(targetImage);
+    }
+
+    // 상점 삭제
     @Transactional
     public void deleteStore(Long storeId, User user) {
         User owner = userRepository.findByUsername(user.getUsername())
@@ -118,12 +168,10 @@ public class StoreService {
 
         // 본인 소유 확인
         if (!Objects.equals(store.getUser().getId(), owner.getId())) {
-            log.warn("[DeleteStore] Forbidden attempt. storeId={}, requesterUserId={}", storeId, owner.getId());
             throw new CustomException(ErrorCode.FORBIDDEN, "본인 소유의 가게가 아닙니다.");
         }
 
         storeRepository.delete(store);
-        log.info("[DeleteStore] Success. storeId={}", storeId);
     }
 
     public List<StoreResponse> getMyStores(User user) {
@@ -132,5 +180,33 @@ public class StoreService {
 
         List<Store> stores = storeRepository.findAllByUser(owner);
         return stores.stream().map(StoreResponse::from).toList();
+    }
+
+
+    // S3에 업로드 및 DB 저장
+    private void uploadAndSaveImages(Store store, List<MultipartFile> images) throws IOException {
+
+        if (images == null || images.isEmpty()) {
+            return;
+        }
+
+        // 기존 이미지 개수 파악하여 인덱스 시작점 설정
+        int currentOrderIndex = store.getImages().size();
+
+        for (MultipartFile file : images) {
+
+            if (file.isEmpty()) continue;
+
+            // S3에 저장
+            String imageUrl = s3Service.uploadFile(file);
+            
+            // DB에 저장
+            StoreImage storeImage = StoreImage.builder()
+                    .store(store)
+                    .imageUrl(imageUrl)
+                    .orderIndex(currentOrderIndex++) // 인덱스 1씩 증가 시키며 저장
+                    .build();
+            store.addImage(storeImage);
+        }
     }
 }

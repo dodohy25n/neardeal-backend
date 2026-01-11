@@ -21,15 +21,13 @@ public class StoreImage {
     @Column(nullable = false)
     private String imageUrl;
 
-    private boolean isThumbnail = false;
-
-    private int orderIndex = 0;
+    @Column(nullable = false)
+    private int orderIndex; // 0일 경우 썸네일
 
     @Builder
-    public StoreImage(Store store, String imageUrl, boolean isThumbnail, int orderIndex) {
+    public StoreImage(Store store, String imageUrl, int orderIndex) {
         this.store = store;
         this.imageUrl = imageUrl;
-        this.isThumbnail = isThumbnail;
         this.orderIndex = orderIndex;
     }
 }
