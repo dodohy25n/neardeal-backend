@@ -6,11 +6,14 @@ import com.neardeal.domain.store.entity.StoreCategory;
 import com.neardeal.common.exception.CustomException;
 import com.neardeal.common.exception.ErrorCode;
 import com.neardeal.common.response.PageResponse;
-import com.neardeal.domain.store.dto.CreateStoreRequest;
-import com.neardeal.domain.store.dto.StoreResponse;
-import com.neardeal.domain.store.dto.UpdateStoreRequest;
+import com.neardeal.domain.store.dto.*;
 import com.neardeal.domain.store.entity.Store;
 import com.neardeal.domain.store.entity.StoreImage;
+import com.neardeal.domain.store.entity.StoreReport;
+import com.neardeal.domain.store.entity.StoreReportReason;
+import java.util.HashSet;
+import java.util.Set;
+import com.neardeal.domain.store.repository.StoreReportRepository;
 import com.neardeal.domain.store.repository.StoreRepository;
 import com.neardeal.domain.user.entity.Role;
 import com.neardeal.domain.user.repository.UserRepository;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -35,6 +39,7 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final StoreReportRepository storeReportRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -86,7 +91,8 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStore(Long storeId, User user, UpdateStoreRequest request, List<MultipartFile> images) throws IOException {
+    public void updateStore(Long storeId, User user, UpdateStoreRequest request, List<MultipartFile> images)
+            throws IOException {
         User owner = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -111,8 +117,7 @@ public class StoreService {
                 request.getPhoneNumber(),
                 request.getIntroduction(),
                 request.getOperatingHours(),
-                request.getStoreCategory()
-        );
+                request.getStoreCategory());
 
         // 새 이미지가 존재하면 기존 것 모두 삭제 후 새로 등록
         if (images != null && !images.isEmpty()) {
@@ -121,7 +126,7 @@ public class StoreService {
             for (StoreImage oldImage : store.getImages()) {
                 s3Service.deleteFile(oldImage.getImageUrl());
             }
-            
+
             // DB 삭제
             store.getImages().clear();
 
@@ -182,7 +187,6 @@ public class StoreService {
         return stores.stream().map(StoreResponse::from).toList();
     }
 
-
     // S3에 업로드 및 DB 저장
     private void uploadAndSaveImages(Store store, List<MultipartFile> images) throws IOException {
 
@@ -195,11 +199,12 @@ public class StoreService {
 
         for (MultipartFile file : images) {
 
-            if (file.isEmpty()) continue;
+            if (file.isEmpty())
+                continue;
 
             // S3에 저장
             String imageUrl = s3Service.uploadFile(file);
-            
+
             // DB에 저장
             StoreImage storeImage = StoreImage.builder()
                     .store(store)
@@ -208,5 +213,36 @@ public class StoreService {
                     .build();
             store.addImage(storeImage);
         }
+    }
+
+    // 상점 신고
+    @Transactional
+    public void reportStore(Long storeId, Long reporterId, StoreReportRequest request) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        User reporter = userRepository.getReferenceById(reporterId);
+
+        if (storeReportRepository.existsByStoreAndReporter(store, reporter)) {
+            throw new CustomException(ErrorCode.STATE_CONFLICT, "이미 신고한 상점입니다.");
+        }
+
+        // List -> Set 변환
+        Set<StoreReportReason> reasons = new HashSet<>(request.getReasons());
+
+        if (reasons.contains(StoreReportReason.ETC)) {
+            if (!StringUtils.hasText(request.getDetail())) {
+                throw new CustomException(ErrorCode.BAD_REQUEST, "기타 사유 선택 시 상세 내용은 필수입니다.");
+            }
+        }
+
+        StoreReport report = StoreReport.builder()
+                .store(store)
+                .reporter(reporter)
+                .reasons(reasons)
+                .detail(request.getDetail())
+                .build();
+
+        storeReportRepository.save(report);
     }
 }
