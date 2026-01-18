@@ -31,17 +31,26 @@ public class Organization extends BaseEntity {
 
     private LocalDateTime expiresAt; // 제휴 만료 시점
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Organization parent;
+
+    @OneToMany(mappedBy = "parent")
+    private java.util.List<Organization> children = new java.util.ArrayList<>();
+
     @Builder
-    public Organization(University university, OrganizationCategory category, String name, LocalDateTime expiresAt) {
+    public Organization(University university, OrganizationCategory category, String name, LocalDateTime expiresAt, Organization parent) {
         this.university = university;
         this.category = category;
         this.name = name;
         this.expiresAt = expiresAt;
+        this.parent = parent;
     }
 
-    public void update(OrganizationCategory category, String name, LocalDateTime expiresAt) {
+    public void update(OrganizationCategory category, String name, LocalDateTime expiresAt, Organization parent) {
         this.category = category;
         this.name = name;
         this.expiresAt = expiresAt;
+        this.parent = parent;
     }
 }

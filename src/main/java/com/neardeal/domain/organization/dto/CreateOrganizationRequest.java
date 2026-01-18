@@ -21,14 +21,17 @@ public class CreateOrganizationRequest {
     @NotBlank(message = "소속 이름은 필수입니다.")
     private String name;
 
+    private Long parentId;
+
     private LocalDateTime expiresAt;
 
-    public Organization toEntity(University university) {
+    public Organization toEntity(University university, Organization parent) {
         return Organization.builder()
                 .university(university)
                 .category(this.category)
                 .name(this.name)
                 .expiresAt(this.expiresAt)
+                .parent(parent)
                 .build();
     }
 }
