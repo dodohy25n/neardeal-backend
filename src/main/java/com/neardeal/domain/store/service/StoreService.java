@@ -49,11 +49,15 @@ public class StoreService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (owner.getRole() != Role.ROLE_OWNER) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
+            throw new CustomException(ErrorCode.FORBIDDEN, "점주 회원만 가게를 등록할 수 있습니다.");
         }
 
         if (storeRepository.existsByName(request.getName())) {
-            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 존재하는 상점 이름입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 등록된 상점 이름입니다.");
+        }
+
+        if (storeRepository.existsByBusinessRegistrationNumber(request.getBusinessRegistrationNumber())) {
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 등록된 사업자등록번호입니다.");
         }
 
         Store store = request.toEntity(owner);

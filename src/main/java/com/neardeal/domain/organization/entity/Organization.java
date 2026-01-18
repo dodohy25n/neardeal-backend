@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.neardeal.common.entity.BaseEntity;
 
@@ -36,7 +38,7 @@ public class Organization extends BaseEntity {
     private Organization parent;
 
     @OneToMany(mappedBy = "parent")
-    private java.util.List<Organization> children = new java.util.ArrayList<>();
+    private List<Organization> children = new ArrayList<>();
 
     @Builder
     public Organization(University university, OrganizationCategory category, String name, LocalDateTime expiresAt, Organization parent) {
