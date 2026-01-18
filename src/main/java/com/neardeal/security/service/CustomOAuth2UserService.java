@@ -57,7 +57,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 소셜 식별자로 조회 (없으면 저장, 있으면 업데이트)
         // username 예시: google_12345678, kakao_87654321
         String username = userInfo.getProvider() + "_" + userInfo.getProviderId();
-        String email = userInfo.getEmail();
 
         // 이미 존재하는 소셜 식별자 -> 업데이트
         User user = userRepository.findByUsername(username)
@@ -68,15 +67,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return userRepository.save(user);
         }
 
-        // 같은 이메일 일반 회원 존재 -> 소셜 회원 가입 차단
-        if (email != null && userRepository.existsByEmail(email)) {
-            throw new OAuth2AuthenticationException("이미 가입된 이메일입니다. 해당 계정으로 로그인해주세요.");
-        }
-
         // 신규 회원가입
         User newSocialUser = User.builder()
                 .username(username)
-                .email(email)
                 .name(userInfo.getName())
                 .role(Role.ROLE_GUEST)
                 .socialType(SocialType.valueOf(userInfo.getProvider().toUpperCase()))

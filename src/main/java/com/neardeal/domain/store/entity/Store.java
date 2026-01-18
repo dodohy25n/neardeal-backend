@@ -2,6 +2,7 @@ package com.neardeal.domain.store.entity;
 
 import com.neardeal.common.entity.BaseEntity;
 import com.neardeal.domain.user.entity.User;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,9 @@ public class Store extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String businessRegistrationNumber;
 
     @Column(nullable = false)
     private String address;
@@ -58,13 +62,18 @@ public class Store extends BaseEntity {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreImage> images = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+
 
     @Builder
-    public Store(User user, String name, String address, Double latitude, Double longitude, String phoneNumber,
-            String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods) {
+    public Store(User user, String name, String address, String businessRegistrationNumber, Double latitude, Double longitude, String phoneNumber,
+            String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods, VerificationStatus verificationStatus) {
         this.user = user;
         this.name = name;
         this.address = address;
+        this.businessRegistrationNumber = businessRegistrationNumber;
         this.latitude = latitude;
         this.longitude = longitude;
         this.phoneNumber = phoneNumber;
@@ -72,6 +81,7 @@ public class Store extends BaseEntity {
         this.operatingHours = operatingHours;
         this.storeCategories = storeCategories != null ? storeCategories : new HashSet<>();
         this.storeMoods = storeMoods != null ? storeMoods : new HashSet<>();
+        this.verificationStatus = verificationStatus != null ? verificationStatus : VerificationStatus.PENDING;
     }
 
     public void updateStore(String name, String address, Double latitude, Double longitude, String phoneNumber,

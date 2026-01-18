@@ -13,6 +13,9 @@ public class CustomerProfile {
     @Id
     private Long userId;
 
+    @Column
+    private String nickname;
+
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId // User의 PK를 이 테이블의 PK이자 FK로 사용
     @JoinColumn(name = "user_id")
@@ -23,8 +26,9 @@ public class CustomerProfile {
     private University university;
 
     @Builder
-    public CustomerProfile(User user, University university) {
+    public CustomerProfile(User user, University university, String nickname) {
         this.user = user;
         this.university = university;
+        this.nickname = nickname;
     }
 }

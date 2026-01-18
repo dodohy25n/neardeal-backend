@@ -17,19 +17,18 @@ public class OwnerProfile {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // 사업자 등록 번호
-    @Column(unique = true, nullable = false)
-    private String businessNumber;
+    private String name;
 
-    // 승인 상태
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+    @Column(unique = true)
+    private String email;
+
+    private String phoneNumber;
 
     @Builder
-    public OwnerProfile(User user, String businessNumber, VerificationStatus verificationStatus) {
+    public OwnerProfile(User user, String name, String email, String phoneNumber) {
         this.user = user;
-        this.businessNumber = businessNumber;
-        this.verificationStatus = verificationStatus != null ? verificationStatus : VerificationStatus.PENDING;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 }

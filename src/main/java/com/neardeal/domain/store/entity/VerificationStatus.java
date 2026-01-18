@@ -1,4 +1,4 @@
-package com.neardeal.domain.user.entity;
+package com.neardeal.domain.store.entity;
 
 public enum VerificationStatus {
     PENDING,

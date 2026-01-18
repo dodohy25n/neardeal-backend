@@ -3,7 +3,13 @@ package com.neardeal.domain.user.controller;
 import com.neardeal.common.response.CommonResponse;
 import com.neardeal.common.response.SwaggerErrorResponse;
 import com.neardeal.common.util.CookieUtil;
-import com.neardeal.domain.user.dto.*;
+import com.neardeal.domain.user.dto.AdminSignupRequest;
+import com.neardeal.domain.user.dto.AuthTokens;
+import com.neardeal.domain.user.dto.CompleteSocialSignupRequest;
+import com.neardeal.domain.user.dto.LoginRequest;
+import com.neardeal.domain.user.dto.LoginResponse;
+import com.neardeal.domain.user.dto.OwnerSignupRequest;
+import com.neardeal.domain.user.dto.StudentSignupRequest;
 import com.neardeal.domain.user.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,19 +33,27 @@ public class AuthController {
         private final AuthService authService;
         private final CookieUtil cookieUtil;
 
-        @Operation(summary = "[공통] 회원가입", description = "새로운 사용자를 등록합니다.")
-        @ApiResponses(value = {
-                @ApiResponse(responseCode = "201", description = "회원가입 성공"),
-                @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
-                @ApiResponse(responseCode = "409", description = "이미 존재하는 아이디/이메일", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
-        })
-        @PostMapping("/signup")
-        public ResponseEntity<CommonResponse<Long>> signUp(
-                @RequestBody SignupRequest request
-        )
-        {
-                Long id = authService.signUp(request);
-                return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(id));
+
+
+        @Operation(summary = "[학생] 학생 회원가입", description = "학생 회원을 등록합니다.")
+        @PostMapping("/signup/student")
+        public ResponseEntity<CommonResponse<Long>> signupStudent(@RequestBody StudentSignupRequest request) {
+            Long id = authService.signupStudent(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(id));
+        }
+
+        @Operation(summary = "[점주] 점주 회원가입", description = "점주 회원을 등록합니다.")
+        @PostMapping("/signup/owner")
+        public ResponseEntity<CommonResponse<Long>> signupOwner(@RequestBody OwnerSignupRequest request) {
+            Long id = authService.signupOwner(request);
+            return ResponseEntity.ok(CommonResponse.success(id));
+        }
+
+        @Operation(summary = "[관리자] 관리자 회원가입 (테스트용)", description = "관리자 계정을 생성합니다.")
+        @PostMapping("/signup/admin")
+        public ResponseEntity<CommonResponse<Long>> signupAdmin(@RequestBody AdminSignupRequest request) {
+            Long id = authService.signupAdmin(request);
+            return ResponseEntity.ok(CommonResponse.success(id));
         }
 
         @Operation(summary = "[공통] 로그인", description = "아이디와 비밀번호로 로그인합니다.")

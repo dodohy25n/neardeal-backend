@@ -17,20 +17,16 @@ public class User extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
-    // 일반 로그인 & 소셜 로그인 공통 식별자 (이메일)
-    // 일반 로그인 -> 이메일 형식 / 소셜 로그인 -> provider_id
+    // 일반 로그인 & 소셜 로그인 공통 식별자
+    // 일반 로그인 -> 아이디 형식 / 소셜 로그인 -> provider_id
     @Column(nullable = false, unique = true)
     private String username;
 
     // 일반 로그인용 (소셜 로그인 사용자는 null)
     private String password;
 
-    // 소셜 로그인 - 일반 로그인 이메일 중복 불가
-    @Column(unique = true)
-    private String email;
-
     // 사용자 이름
-    @Column(nullable = false)
+    @Column
     private String name;
 
     // 사용자 전화번호
@@ -55,10 +51,9 @@ public class User extends BaseEntity {
     private String socialId;
 
     @Builder
-    public User(String username, String email, String password, String name, String phoneNumber, Gender gender, LocalDate birthDate, Role role, SocialType socialType, String socialId) {
+    public User(String username, String password, String name, String phoneNumber, Gender gender, LocalDate birthDate, Role role, SocialType socialType, String socialId) {
         this.username = username;
         this.password = password;
-        this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
@@ -78,9 +73,6 @@ public class User extends BaseEntity {
     public User updateSocialInfo(OAuth2UserInfo userInfo) {
         if (userInfo.getName() != null && !userInfo.getName().isEmpty()) {
             this.name = userInfo.getName();
-        }
-        if (userInfo.getEmail() != null && !userInfo.getEmail().isEmpty()) {
-            this.email = userInfo.getEmail();
         }
         return this;
     }

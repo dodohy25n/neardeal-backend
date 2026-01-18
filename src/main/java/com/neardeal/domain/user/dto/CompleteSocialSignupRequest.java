@@ -1,15 +1,28 @@
 package com.neardeal.domain.user.dto;
 
+import com.neardeal.domain.user.dto.OwnerSignupRequest.StoreCreateRequest;
 import com.neardeal.domain.user.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class CompleteSocialSignupRequest {
-    private String phoneNumber;
     private Role role;
 
-    private Long universityId;      // Customer인 경우
-    private String businessNumber;  // Owner인 경우
+    // 공통
+    private String name;
+    private String email;
+    private String phoneNumber;
+
+    // 학생 
+    private String nickname;
+    private Long universityId;
+    private Long collegeId;
+    private Long departmentId;
+
+    // 점주 
+    private List<StoreCreateRequest> storeList;
 }

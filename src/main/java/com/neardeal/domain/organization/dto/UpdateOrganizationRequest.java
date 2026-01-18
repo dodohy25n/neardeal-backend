@@ -19,5 +19,7 @@ public class UpdateOrganizationRequest {
     @NotBlank(message = "소속 이름은 필수입니다.")
     private String name;
 
+    private Long parentId;
+
     private LocalDateTime expiresAt;
 }
