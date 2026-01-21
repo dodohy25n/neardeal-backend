@@ -83,6 +83,9 @@ jwt:
   access-expiration: 3600000 # 1시간
   refresh-expiration: 1209600000 # 14일
 
+open-api:
+  service-key: ${OPEN_API_KEY}
+
 springdoc:
   swagger-ui:
     path: /docs
@@ -91,3 +94,4 @@ springdoc:
   show-actuator: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+
