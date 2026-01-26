@@ -11,7 +11,6 @@ public class StoreNewsCommentResponse {
 
     private Long id;
     private Long userId;
-    private String nickname;
     private String content;
     private LocalDateTime createdAt;
     private boolean isMine;
@@ -19,7 +18,6 @@ public class StoreNewsCommentResponse {
     public StoreNewsCommentResponse(StoreNewsComment comment, User currentUser) {
         this.id = comment.getId();
         this.userId = comment.getUser().getId();
-        this.nickname = comment.getUser().getName();
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
         this.isMine = currentUser != null && comment.getUser().getId().equals(currentUser.getId());
