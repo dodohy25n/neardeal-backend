@@ -25,10 +25,11 @@ public class StudentProfile {
     @JoinColumn(name = "university_id")
     private University university;
 
+
     @Builder
-    public StudentProfile(User user, University university, String nickname) {
+    public StudentProfile(User user, String nickname, University university) {
         this.user = user;
-        this.university = university;
         this.nickname = nickname;
+        this.university = university;
     }
 }

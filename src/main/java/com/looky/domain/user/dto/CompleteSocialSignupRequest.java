@@ -1,10 +1,12 @@
 package com.looky.domain.user.dto;
 
 import com.looky.domain.user.dto.OwnerSignupRequest.StoreCreateRequest;
+import com.looky.domain.user.entity.Gender;
 import com.looky.domain.user.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -13,9 +15,8 @@ public class CompleteSocialSignupRequest {
     private Role role;
 
     // 공통
-    private String name;
-    private String email;
-    private String phone;
+    private Gender gender;
+    private LocalDate birthDate;
 
     // 학생 
     private String nickname;
@@ -23,6 +24,8 @@ public class CompleteSocialSignupRequest {
     private Long collegeId;
     private Long departmentId;
 
-    // 점주 
-    private List<StoreCreateRequest> storeList;
+    // 점주
+    private String name;
+    private String email;
+    private String phone;
 }

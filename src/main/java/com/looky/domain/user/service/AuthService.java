@@ -83,6 +83,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .gender(request.getGender())
                 .birthDate(request.getBirthDate())
+                .name(request.getName())
                 .role(Role.ROLE_OWNER)
                 .socialType(SocialType.LOCAL)
                 .build();
@@ -215,8 +216,8 @@ public class AuthService {
 
         StudentProfile profile = StudentProfile.builder()
                 .user(user)
-                .university(university)
                 .nickname(nickname)
+                .university(university)
                 .build();
         studentProfileRepository.save(profile);
 

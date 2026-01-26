@@ -58,16 +58,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // username 예시: google_12345678, kakao_87654321
         String username = userInfo.getProvider() + "_" + userInfo.getProviderId();
 
-        // 이미 존재하는 소셜 식별자 -> 업데이트
-        User user = userRepository.findByUsername(username)
-                .map(entity -> entity.updateSocialInfo(userInfo))
-                .orElse(null);
+        // 이미 존재하는 소셜 식별자 -> 패스
+        User user = userRepository.findByUsername(username).orElse(null);
         
         if (user != null) {
             return userRepository.save(user);
         }
 
-        // 신규 회원가입
+        // 존재하지 않으면 신규 회원가입
         User newSocialUser = User.builder()
                 .username(username)
                 .name(userInfo.getName())

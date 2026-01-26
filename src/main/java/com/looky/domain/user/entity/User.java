@@ -25,13 +25,6 @@ public class User extends BaseEntity {
     // 일반 로그인용 (소셜 로그인 사용자는 null)
     private String password;
 
-    // 사용자 이름
-    @Column
-    private String name;
-
-    // 사용자 전화번호
-    private String phone;
-
     // 사용자 성별
     private Gender gender;
 
@@ -54,8 +47,6 @@ public class User extends BaseEntity {
     public User(String username, String password, String name, String phone, Gender gender, LocalDate birthDate, Role role, SocialType socialType, String socialId) {
         this.username = username;
         this.password = password;
-        this.name = name;
-        this.phone = phone;
         this.gender = gender;
         this.birthDate = birthDate;
         this.role = role;
@@ -64,18 +55,12 @@ public class User extends BaseEntity {
     }
 
     // 소셜 가입 후 부족한 정보 완성 -> ROLE_GUEST에서 승격
-    public void completeInsufficientInfo(Role role, String phone) {
+    public void completeInsufficientInfo(Role role, Gender gender, LocalDate birthDate) {
         this.role = role;
-        this.phone = phone;
+        this.gender = gender;
+        this.birthDate = birthDate;
     }
 
-    // 이미 가입된 소셜 식벼자일 때 나머지 정보 최신화
-    public User updateSocialInfo(OAuth2UserInfo userInfo) {
-        if (userInfo.getName() != null && !userInfo.getName().isEmpty()) {
-            this.name = userInfo.getName();
-        }
-        return this;
-    }
 
     public void setUserId(Long userId) {
         this.id = userId;
