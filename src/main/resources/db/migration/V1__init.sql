@@ -100,12 +100,14 @@ create table store
     latitude         double                                 null,
     longitude        double                                 null,
     need_to_check    bit                                    null,
+    check_reason     varchar(255)                           null,
     created_at       datetime(6)                            not null,
     modified_at      datetime(6)                            not null,
     store_id         bigint auto_increment
         primary key,
-    user_id          bigint                                 not null,
-    address          varchar(255)                           not null,
+    user_id          bigint                                 null,
+    road_address     varchar(255)                           not null,
+    jibun_address    varchar(255)                           null,
     biz_reg_no       varchar(255)                           null,
     branch           varchar(255)                           null,
     created_by       varchar(255)                           null,
@@ -117,6 +119,17 @@ create table store
     store_status     enum ('ACTIVE', 'BANNED', 'UNCLAIMED') not null,
     constraint FKn82wpcqrb21yddap4s3ttwnxj
         foreign key (user_id) references user (user_id)
+);
+
+create table store_university
+(
+    id bigint auto_increment primary key,
+    store_id bigint not null,
+    university_id bigint not null,
+    constraint FK_store_university_store
+        foreign key (store_id) references store (store_id),
+    constraint FK_store_university_university
+        foreign key (university_id) references university (university_id)
 );
 
 create table coupon
