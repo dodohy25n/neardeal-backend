@@ -9,11 +9,6 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,7 +18,7 @@ spring:
         format_sql: true # 쿼리 가독성 향상
         
   flyway:
-    enabled: false # 로컬에선 JPA UPDATE 사용
+    enabled: true # 로컬에선 JPA UPDATE 사용
 
 
   security:

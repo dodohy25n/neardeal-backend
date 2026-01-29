@@ -1,29 +1,38 @@
 package com.looky.domain.user.service;
 
+import com.looky.domain.user.entity.RefreshToken;
+import com.looky.domain.user.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    private static final String PREFIX = "RT:";
-
+    @Transactional
     public void save(Long userId, String refreshToken) {
-        String key = PREFIX + userId;
-        redisTemplate.opsForValue().set(key, refreshToken, 14, TimeUnit.DAYS);
+        RefreshToken token = RefreshToken.builder()
+                .userId(userId)
+                .token(refreshToken)
+                .expiryDate(LocalDateTime.now().plusDays(14))
+                .build();
+        refreshTokenRepository.save(token);
     }
 
+    @Transactional(readOnly = true)
     public String getByUserId(Long userId) {
-        return redisTemplate.opsForValue().get(PREFIX + userId);
+        return refreshTokenRepository.findById(userId)
+                .map(RefreshToken::getToken)
+                .orElse(null);
     }
 
+    @Transactional
     public void delete(Long userId) {
-        redisTemplate.delete(PREFIX + userId);
+        refreshTokenRepository.deleteById(userId);
     }
 }

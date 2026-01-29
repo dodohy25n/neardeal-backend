@@ -57,19 +57,4 @@ public class UserManageController {
         userManageService.updateUserRole(userId, request);
         return ResponseEntity.ok(CommonResponse.success(null));
     }
-
-    @Operation(summary = "[관리자] 사용자 강제 탈퇴", description = "사용자를 강제 탈퇴시킵니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "사용자 강제 탈퇴 성공"),
-            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "사용자 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
-    })
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<CommonResponse<Void>> deleteUser(
-            @PathVariable Long userId
-    )
-    {
-        userManageService.deleteUser(userId);
-        return ResponseEntity.status(org.springframework.http.HttpStatus.NO_CONTENT).body(CommonResponse.success(null));
-    }
 }

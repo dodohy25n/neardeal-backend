@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserManageService {
 
     private final UserRepository userRepository;
-    private final AuthManageService authManageService;
 
     // 전체 사용자 조회
     @Transactional(readOnly = true)
@@ -35,21 +34,5 @@ public class UserManageService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.changeRole(request.getRole());
-    }
-
-    // 사용자 삭제
-    @Transactional
-    public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        userRepository.delete(user);
-
-        // 리프레시 토큰도 함께 삭제
-        try {
-            authManageService.deleteToken(userId);
-        } catch (CustomException e) {
-            // 토큰이 없어도 회원 탈퇴는 진행되어야 함 (무시)
-        }
     }
 }
