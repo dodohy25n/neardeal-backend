@@ -80,10 +80,11 @@ public class StoreService {
         return StoreResponse.from(store);
     }
 
-    public PageResponse<StoreResponse> getStores(String keyword, List<StoreCategory> categories, List<StoreMood> moods, Pageable pageable) {
+    public PageResponse<StoreResponse> getStores(String keyword, List<StoreCategory> categories, List<StoreMood> moods, Long universityId, Pageable pageable) {
         Specification<Store> spec = Specification.where(StoreSpecification.hasKeyword(keyword))
                 .and(StoreSpecification.hasCategories(categories))
-                .and(StoreSpecification.hasMoods(moods));
+                .and(StoreSpecification.hasMoods(moods))
+                .and(StoreSpecification.hasUniversityId(universityId));
 
         Page<Store> storePage = storeRepository.findAll(spec, pageable);
 

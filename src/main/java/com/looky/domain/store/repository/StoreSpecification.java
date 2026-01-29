@@ -40,4 +40,15 @@ public class StoreSpecification {
             return moodJoin.in(moods);
         };
     }
+
+    public static Specification<Store> hasUniversityId(Long universityId) {
+        return (root, query, cb) -> {
+            if (universityId == null) {
+                return null;
+            }
+            var universityJoin = root.join("universities");
+            query.distinct(true);
+            return cb.equal(universityJoin.get("university").get("id"), universityId);
+        };
+    }
 }
