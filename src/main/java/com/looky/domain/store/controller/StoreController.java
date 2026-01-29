@@ -82,6 +82,20 @@ public class StoreController {
                 return ResponseEntity.ok(CommonResponse.success(response));
         }
 
+        @Operation(summary = "[공통] 주위 상점 조회", description = "위도, 경도, 반경(km)을 기준으로 주위 상점을 조회합니다.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "상점 목록 조회 성공")
+        })
+        @GetMapping("/nearby")
+        public ResponseEntity<CommonResponse<List<StoreResponse>>> getNearbyStores(
+                @Parameter(description = "위도") @RequestParam Double latitude,
+                @Parameter(description = "경도") @RequestParam Double longitude,
+                @Parameter(description = "반경(km)") @RequestParam Double radius
+        ) {
+                List<StoreResponse> response = storeService.getNearbyStores(latitude, longitude, radius);
+                return ResponseEntity.ok(CommonResponse.success(response));
+        }
+
         @Operation(summary = "[점주] 상점 정보 수정", description = "상점 정보를 수정합니다. (본인 상점만 가능)")
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "상점 수정 성공"),
@@ -153,4 +167,5 @@ public class StoreController {
                 storeService.reportStore(storeId, principalDetails.getUser().getId(), request);
                 return ResponseEntity.ok(CommonResponse.success(null));
         }
+
 }

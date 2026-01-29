@@ -141,6 +141,12 @@ public class StoreService {
         }
     }
 
+    // 위치 기반 상점 목록 조회
+    public List<StoreResponse> getNearbyStores(Double latitude, Double longitude, Double radius) {
+        List<Store> stores = storeRepository.findByLocationWithin(latitude, longitude, radius);
+        return stores.stream().map(StoreResponse::from).toList();
+    }
+    
     // 상점 이미지 개별 삭제
     @Transactional
     public void deleteStoreImage(Long storeId, Long imageId, User user) {
@@ -251,4 +257,6 @@ public class StoreService {
 
         storeReportRepository.save(report);
     }
+
+
 }
