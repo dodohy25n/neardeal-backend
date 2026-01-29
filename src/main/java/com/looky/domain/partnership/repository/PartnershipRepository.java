@@ -3,20 +3,36 @@ package com.looky.domain.partnership.repository;
 import com.looky.domain.partnership.entity.Partnership;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface PartnershipRepository extends JpaRepository<Partnership, Long> {
 
-    @Query("SELECT so FROM Partnership so " +
-            "JOIN FETCH so.store s " +
-            "JOIN FETCH so.organization o " +
-            "JOIN FETCH o.university " +
-            "ORDER BY so.id DESC")
-    List<Partnership> findAllWithStoreAndOrganization();
-
     boolean existsByStoreIdAndOrganizationId(Long storeId, Long organizationId);
 
     // 복합키 조회용
     Partnership findByStoreIdAndOrganizationId(Long storeId, Long organizationId);
+
+    // 대학별 제휴 조회
+    @Query("SELECT p FROM Partnership p " +
+            "JOIN FETCH p.store s " +
+            "JOIN FETCH p.organization o " +
+            "JOIN FETCH o.university u " +
+            "WHERE u.id = :universityId " +
+            "ORDER BY p.id DESC")
+    List<Partnership> findAllByOrganizationUniversityId(
+            @Param("universityId") Long universityId);
+
+    // 대학 및 조직별 제휴 조회
+    @Query("SELECT p FROM Partnership p " +
+            "JOIN FETCH p.store s " +
+            "JOIN FETCH p.organization o " +
+            "JOIN FETCH o.university u " +
+            "WHERE o.id = :organizationId AND u.id = :universityId " +
+            "ORDER BY p.id DESC")
+    List<Partnership> findAllByOrganizationIdAndOrganizationUniversityId(
+            @Param("organizationId") Long organizationId,
+            @Param("universityId") Long universityId
+    );
 }
