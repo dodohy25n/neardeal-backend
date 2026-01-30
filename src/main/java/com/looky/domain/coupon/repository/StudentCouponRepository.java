@@ -34,4 +34,5 @@ public interface StudentCouponRepository extends JpaRepository<StudentCoupon, Lo
     // 해당 유저가 특정 상점에서 쿠폰을 사용한 적이 있는가? (리뷰 검증용)
     boolean existsByUserAndCoupon_StoreAndStatus(User user, Store store, CouponUsageStatus status);
 
+    List<StudentCoupon> findByUserAndCouponIn(User user, List<Coupon> coupons);
 }

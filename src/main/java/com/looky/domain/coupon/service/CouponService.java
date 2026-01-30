@@ -16,6 +16,7 @@ import com.looky.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.looky.domain.user.entity.Role;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -125,25 +126,62 @@ public class CouponService {
         studentCoupon.use();
     }
 
+
+
     // --- 공통 ---
 
-    public List<CouponResponse> getCouponsByStore(Long storeId) {
-        return couponRepository.findByStoreId(storeId).stream()
+    public List<CouponResponse> getCouponsByStore(Long storeId, User user) {
+        List<Coupon> coupons = couponRepository.findByStoreId(storeId);
+        List<CouponResponse> responses = coupons.stream()
                 .map(CouponResponse::from)
                 .collect(Collectors.toList());
+
+        // 학생인 경우에만 발급 여부 확인
+        if (user.getRole() == Role.ROLE_STUDENT && !coupons.isEmpty()) {
+            List<StudentCoupon> issuedCoupons = studentCouponRepository.findByUserAndCouponIn(user, coupons);
+            List<Long> issuedCouponIds = issuedCoupons.stream()
+                    .map(sc -> sc.getCoupon().getId())
+                    .collect(Collectors.toList());
+
+            responses.forEach(response -> {
+                if (issuedCouponIds.contains(response.getId())) {
+                    response.setIsIssued(true);
+                }
+            });
+        }
+
+        return responses;
     }
 
-    public List<CouponResponse> getCouponsByItem(Long itemId) {
+    public List<CouponResponse> getCouponsByItem(Long itemId, User user) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "상품을 찾을 수 없습니다."));
 
-        return couponItemRepository.findByItem(item).stream()
+        List<Coupon> coupons = couponItemRepository.findByItem(item).stream()
                 .map(CouponItem::getCoupon)
+                .collect(Collectors.toList());
+
+        List<CouponResponse> responses = coupons.stream()
                 .map(CouponResponse::from)
                 .collect(Collectors.toList());
+
+        // 학생인 경우에만 발급 여부 확인
+        if (user.getRole() == Role.ROLE_STUDENT && !coupons.isEmpty()) {
+            List<StudentCoupon> issuedCoupons = studentCouponRepository.findByUserAndCouponIn(user, coupons);
+            List<Long> issuedCouponIds = issuedCoupons.stream()
+                    .map(sc -> sc.getCoupon().getId())
+                    .collect(Collectors.toList());
+
+            responses.forEach(response -> {
+                if (issuedCouponIds.contains(response.getId())) {
+                    response.setIsIssued(true);
+                }
+            });
+        }
+
+        return responses;
     }
 
-    // --- 학생용 ---
 
     @Transactional
     public IssueCouponResponse issueCoupon(Long couponId, User user) {

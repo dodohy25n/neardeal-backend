@@ -100,6 +100,7 @@ public class CouponController {
 
 
         // --- 공통 ---
+
         @Operation(summary = "[공통] 상점별 쿠폰 목록 조회", description = "특정 상점의 모든 쿠폰을 조회합니다.")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "성공"),
@@ -107,10 +108,11 @@ public class CouponController {
         })
         @GetMapping("/stores/{storeId}/coupons")
         public ResponseEntity<CommonResponse<List<CouponResponse>>> getCouponsByStore(
-                @Parameter(description = "상점 ID") @PathVariable Long storeId
+                @Parameter(description = "상점 ID") @PathVariable Long storeId,
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
         )
         {
-                List<CouponResponse> response = couponService.getCouponsByStore(storeId);
+                List<CouponResponse> response = couponService.getCouponsByStore(storeId, principalDetails != null ? principalDetails.getUser() : null);
                 return ResponseEntity.ok(CommonResponse.success(response));
         }
 
@@ -121,14 +123,14 @@ public class CouponController {
         })
         @GetMapping("/items/{itemId}/coupons")
         public ResponseEntity<CommonResponse<List<CouponResponse>>> getCouponsByItem(
-                @Parameter(description = "상품 ID") @PathVariable Long itemId
+                @Parameter(description = "상품 ID") @PathVariable Long itemId,
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
         )
         {
-                List<CouponResponse> response = couponService.getCouponsByItem(itemId);
+                List<CouponResponse> response = couponService.getCouponsByItem(itemId, principalDetails != null ? principalDetails.getUser() : null);
                 return ResponseEntity.ok(CommonResponse.success(response));
         }
 
-        // --- 학생용 ---
         @Operation(summary = "[학생] 쿠폰 발급", description = "사용자가 쿠폰을 발급받습니다.")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "쿠폰 발급 성공"),

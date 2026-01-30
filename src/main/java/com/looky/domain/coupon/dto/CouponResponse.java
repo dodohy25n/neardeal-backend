@@ -19,6 +19,7 @@ public class CouponResponse {
     private Integer totalQuantity;
     private Integer limitPerUser;
     private CouponStatus status;
+    private Boolean isIssued; // 발급 여부 (학생용)
 
     public static CouponResponse from(Coupon coupon) {
         return CouponResponse.builder()
@@ -26,13 +27,17 @@ public class CouponResponse {
                 .storeId(coupon.getStore().getId())
                 .title(coupon.getTitle())
                 .description(coupon.getDescription())
-                .targetOrganizationId(
-                        coupon.getTargetOrganization() != null ? coupon.getTargetOrganization().getId() : null)
+                .targetOrganizationId(coupon.getTargetOrganization() != null ? coupon.getTargetOrganization().getId() : null)
                 .issueStartsAt(coupon.getIssueStartsAt())
                 .issueEndsAt(coupon.getIssueEndsAt())
                 .totalQuantity(coupon.getTotalQuantity())
                 .limitPerUser(coupon.getLimitPerUser())
                 .status(coupon.getStatus())
+                .isIssued(false) // Default to false
                 .build();
+    }
+
+    public void setIsIssued(boolean isIssued) {
+        this.isIssued = isIssued;
     }
 }
