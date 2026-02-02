@@ -20,6 +20,7 @@ import com.looky.domain.store.repository.StoreReportRepository;
 import com.looky.domain.store.repository.StoreRepository;
 import com.looky.domain.user.entity.Role;
 import com.looky.domain.user.repository.UserRepository;
+import com.looky.domain.item.repository.ItemRepository;
 import com.looky.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
     private final StoreReportRepository storeReportRepository;
+    private final ItemRepository itemRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -259,4 +261,16 @@ public class StoreService {
     }
 
 
+    // 상점 등록 상태 조회 (메뉴 정보 등록 여부, 매장 정보 등록 여부)
+    public StoreRegistrationStatusResponse getStoreRegistrationStatus(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "가게를 찾을 수 없습니다."));
+
+        boolean hasMenu = itemRepository.existsByStoreId(storeId);
+        boolean hasStoreInfo = StringUtils.hasText(store.getIntroduction()) 
+                && store.getStoreCategories() != null && !store.getStoreCategories().isEmpty()
+                && store.getStoreMoods() != null && !store.getStoreMoods().isEmpty();
+
+        return StoreRegistrationStatusResponse.of(hasMenu, hasStoreInfo);
+    }
 }
