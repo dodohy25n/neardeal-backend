@@ -7,6 +7,8 @@ import com.looky.domain.item.dto.CreateItemRequest;
 import com.looky.domain.item.dto.ItemResponse;
 import com.looky.domain.item.dto.UpdateItemRequest;
 import com.looky.domain.item.entity.Item;
+import com.looky.domain.item.entity.ItemCategory;
+import com.looky.domain.item.repository.ItemCategoryRepository;
 import com.looky.domain.item.repository.ItemRepository;
 import com.looky.domain.store.entity.Store;
 import com.looky.domain.store.repository.StoreRepository;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final ItemCategoryRepository itemCategoryRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
@@ -46,7 +49,17 @@ public class ItemService {
             imageUrl = s3Service.uploadFile(image);
         }
 
-        Item item = request.toEntity(store, imageUrl);
+        ItemCategory itemCategory = null;
+        if (request.getItemCategoryId() != null) {
+            itemCategory = itemCategoryRepository.findById(request.getItemCategoryId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "카테고리를 찾을 수 없습니다."));
+            
+            if (!Objects.equals(itemCategory.getStore().getId(), store.getId())) {
+                 throw new CustomException(ErrorCode.BAD_REQUEST, "해당 매장의 카테고리가 아닙니다.");
+            }
+        }
+
+        Item item = request.toEntity(store, itemCategory, imageUrl);
         Item savedItem = itemRepository.save(item);
         return savedItem.getId();
     }
@@ -76,7 +89,7 @@ public class ItemService {
         String imageUrl = item.getImageUrl();
 
         if (image != null && !image.isEmpty()) {
-
+            
             // 기존 이미지 있다면 S3에서 삭제
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 s3Service.deleteFile(imageUrl);
@@ -84,6 +97,19 @@ public class ItemService {
 
             // 새 이미지 업로드 및 URL 교체
             imageUrl = s3Service.uploadFile(image);
+        }
+
+        ItemCategory itemCategory = null;
+
+        if (request.getRemoveItemCategory() != null && request.getRemoveItemCategory()) { // 카테고리 삭제
+            item.removeItemCategory();
+        } else if (request.getItemCategoryId() != null) { // 카테고리 변경
+            itemCategory = itemCategoryRepository.findById(request.getItemCategoryId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "카테고리를 찾을 수 없습니다."));
+
+            if (!Objects.equals(itemCategory.getStore().getId(), item.getStore().getId())) {
+                throw new CustomException(ErrorCode.BAD_REQUEST, "해당 매장의 카테고리가 아닙니다.");
+            }
         }
 
         item.updateItem(
@@ -95,7 +121,8 @@ public class ItemService {
                 request.getItemOrder(),
                 request.getIsRepresentative(),
                 request.getIsHidden(),
-                request.getBadge()
+                request.getBadge(),
+                itemCategory
         );
     }
 

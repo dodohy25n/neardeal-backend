@@ -2,6 +2,7 @@ package com.looky.domain.item.dto;
 
 import com.looky.domain.item.entity.Item;
 import com.looky.domain.item.entity.ItemBadge;
+import com.looky.domain.item.entity.ItemCategory;
 import com.looky.domain.store.entity.Store;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -34,7 +35,9 @@ public class CreateItemRequest {
 
     private ItemBadge badge;
 
-    public Item toEntity(Store store, String uploadedImageUrl) {
+    private Long itemCategoryId;
+
+    public Item toEntity(Store store, ItemCategory itemCategory, String uploadedImageUrl) {
         return Item.builder()
                 .store(store)
                 .name(name)
@@ -46,6 +49,7 @@ public class CreateItemRequest {
                 .isRepresentative(isRepresentative)
                 .isHidden(isHidden)
                 .badge(badge)
+                .itemCategory(itemCategory)
                 .build();
     }
 }

@@ -9,4 +9,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByStoreId(Long storeId);
 
     boolean existsByStoreId(Long storeId);
+
+    boolean existsByItemCategory(com.looky.domain.item.entity.ItemCategory itemCategory);
 }

@@ -15,4 +15,6 @@ public class UpdateItemRequest {
     private Boolean isRepresentative;
     private Boolean isHidden;
     private ItemBadge badge;
+    private Long itemCategoryId;
+    private Boolean removeItemCategory;
 }

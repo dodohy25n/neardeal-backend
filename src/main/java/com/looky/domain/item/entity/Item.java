@@ -42,8 +42,12 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemBadge badge;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_category_id")
+    private ItemCategory itemCategory;
+
     @Builder
-    public Item(Store store, String name, int price, String description, String imageUrl, boolean isSoldOut, Integer itemOrder, boolean isRepresentative, boolean isHidden, ItemBadge badge) {
+    public Item(Store store, String name, int price, String description, String imageUrl, boolean isSoldOut, Integer itemOrder, boolean isRepresentative, boolean isHidden, ItemBadge badge, ItemCategory itemCategory) {
         this.store = store;
         this.name = name;
         this.price = price;
@@ -54,9 +58,10 @@ public class Item extends BaseEntity {
         this.isRepresentative = isRepresentative;
         this.isHidden = isHidden;
         this.badge = badge;
+        this.itemCategory = itemCategory;
     }
 
-    public void updateItem(String name, Integer price, String description, String imageUrl, Boolean isSoldOut, Integer itemOrder, Boolean isRepresentative, Boolean isHidden, ItemBadge badge) {
+    public void updateItem(String name, Integer price, String description, String imageUrl, Boolean isSoldOut, Integer itemOrder, Boolean isRepresentative, Boolean isHidden, ItemBadge badge, ItemCategory itemCategory) {
         if (name != null) {
             this.name = name;
         }
@@ -84,5 +89,12 @@ public class Item extends BaseEntity {
         if (badge != null) {
             this.badge = badge;
         }
+        if (itemCategory != null) {
+            this.itemCategory = itemCategory;
+        }
+    }
+
+    public void removeItemCategory() {
+        this.itemCategory = null;
     }
 }
