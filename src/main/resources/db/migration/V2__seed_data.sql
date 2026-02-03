@@ -1,154 +1,218 @@
-/* V2__seed_data.sql */
+/* 외래 키 제약 조건 검사를 일시적으로 끕니다 */
+SET FOREIGN_KEY_CHECKS = 0;
 
-/* University (10개) */
-INSERT INTO university (email_domain, name) VALUES
-('univ1.ac.kr', '한국대학교'),
-('univ2.ac.kr', '서울대학교'),
-('univ3.ac.kr', '연세대학교'),
-('univ4.ac.kr', '고려대학교'),
-('univ5.ac.kr', '성균관대학교'),
-('univ6.ac.kr', '한양대학교'),
-('univ7.ac.kr', '서강대학교'),
-('univ8.ac.kr', '중앙대학교'),
-('univ9.ac.kr', '경희대학교'),
-('univ10.ac.kr', '한국외국어대학교');
+-- 1. University (전북대학교)
+INSERT INTO university (university_id, name, email_domain) VALUES (1, '전북대학교', 'jbnu.ac.kr');
 
-/* User (10개 - 관리자 1, 학생회 3, 점주 3, 학생 3) */
-/* 비밀번호 '0000'의 BCrypt Hash: $2a$10$Op.1... (To be replaced with actual hash from tool output) */
-/* 사용자명 변경: admin1 -> admin, council1 -> council, owner1 -> owner, student1 -> student */
-INSERT INTO user (username, password, name, phone, role, created_at, modified_at, gender) VALUES
-('admin', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '관리자', '010-0000-0000', 'ROLE_ADMIN', NOW(), NOW(), 1),
-('council', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '총학생회장', '010-1111-1111', 'ROLE_COUNCIL', NOW(), NOW(), 1),
-('council2', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '공대학생회장', '010-2222-2222', 'ROLE_COUNCIL', NOW(), NOW(), 0),
-('council3', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '경영대학생회장', '010-3333-3333', 'ROLE_COUNCIL', NOW(), NOW(), 1),
-('owner', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '김점주', '010-4444-4444', 'ROLE_OWNER', NOW(), NOW(), 0),
-('owner2', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '이점주', '010-5555-5555', 'ROLE_OWNER', NOW(), NOW(), 1),
-('owner3', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '박점주', '010-6666-6666', 'ROLE_OWNER', NOW(), NOW(), 0),
-('student', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '김학생', '010-7777-7777', 'ROLE_STUDENT', NOW(), NOW(), 1),
-('student2', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '이학생', '010-8888-8888', 'ROLE_STUDENT', NOW(), NOW(), 0),
-('student3', '$2b$12$ilUslC664yQIdJgyIhHxkOzJl1LXl1VkdXqXF22TjO3YGjAhJz9ze', '박학생', '010-9999-9999', 'ROLE_STUDENT', NOW(), NOW(), 1);
+-- 2. Users
+-- Password is 'password' (bcrypt hashed) for all users because '0000' hash generation was not possible in this environment. 
+-- Please change it after login if needed.
+-- Hash: $2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2
 
-/* Council Profile (3개) */
-INSERT INTO council_profile (user_id, university_id) VALUES
-(2, 1),
-(3, 1),
-(4, 2);
+-- 2.1 Admin
+INSERT INTO user (user_id, created_at, modified_at, username, password, role, deleted, name, gender, birth_date, social_type) 
+VALUES (1, NOW(), NOW(), 'admin', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_ADMIN', 0, '관리자', 0, '1990-01-01', 'LOCAL');
 
-/* Owner Profile (3개) */
-INSERT INTO owner_profile (user_id, name, phone, email) VALUES
-(5, '김점주', '010-4444-4444', 'owner1@test.com'),
-(6, '이점주', '010-5555-5555', 'owner2@test.com'),
-(7, '박점주', '010-6666-6666', 'owner3@test.com');
+-- 2.2 Owners (5 Owners)
+INSERT INTO user (user_id, created_at, modified_at, username, password, role, deleted, name, gender, birth_date, social_type) VALUES 
+(10, NOW(), NOW(), 'owner1', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_OWNER', 0, '김사장', 0, '1980-05-05', 'LOCAL'),
+(11, NOW(), NOW(), 'owner2', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_OWNER', 0, '이점주', 1, '1985-06-06', 'LOCAL'),
+(12, NOW(), NOW(), 'owner3', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_OWNER', 0, '박대표', 0, '1990-07-07', 'LOCAL'),
+(13, NOW(), NOW(), 'owner4', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_OWNER', 0, '최오너', 1, '1982-08-08', 'LOCAL'),
+(14, NOW(), NOW(), 'owner5', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_OWNER', 0, '정주인', 0, '1978-09-09', 'LOCAL');
 
-/* Student Profile (3개) */
-INSERT INTO student_profile (user_id, university_id, nickname) VALUES
-(8, 1, '새내기1'),
-(9, 1, '헌내기2'),
-(10, 2, '졸업반3');
+INSERT INTO owner_profile (user_id, name, email, phone) VALUES 
+(10, '김사장', 'owner1@looky.com', '010-1111-1111'),
+(11, '이점주', 'owner2@looky.com', '010-2222-2222'),
+(12, '박대표', 'owner3@looky.com', '010-3333-3333'),
+(13, '최오너', 'owner4@looky.com', '010-4444-4444'),
+(14, '정주인', 'owner5@looky.com', '010-5555-5555');
 
-/* Organization (10개) */
-INSERT INTO organization (university_id, user_id, name, category, created_at, modified_at) VALUES
-(1, 2, '한국대 총학생회', 'STUDENT_COUNCIL', NOW(), NOW()), -- ID 1
-(1, 3, '한국대 공과대학', 'COLLEGE', NOW(), NOW()), -- ID 2
-(1, 3, '한국대 컴퓨터공학과', 'DEPARTMENT', NOW(), NOW()), -- ID 3
-(2, 4, '서울대 총학생회', 'STUDENT_COUNCIL', NOW(), NOW()), -- ID 4
-(2, 4, '서울대 경영대학', 'COLLEGE', NOW(), NOW()), -- ID 5
-(3, 1, '연세대 총학생회', 'STUDENT_COUNCIL', NOW(), NOW()), -- ID 6
-(4, 1, '고려대 총학생회', 'STUDENT_COUNCIL', NOW(), NOW()), -- ID 7
-(5, 1, '성균관대 총학생회', 'STUDENT_COUNCIL', NOW(), NOW()), -- ID 8
-(6, 1, '한양대 총학생회', 'STUDENT_COUNCIL', NOW(), NOW()), -- ID 9
-(7, 1, '서강대 총학생회', 'STUDENT_COUNCIL', NOW(), NOW()); -- ID 10
+-- 2.3 Students (20 Students)
+INSERT INTO user (user_id, created_at, modified_at, username, password, role, deleted, name, gender, birth_date, social_type, social_id) VALUES 
+(101, NOW(), NOW(), 'student1', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생1', 0, '2000-01-01', 'KAKAO', 'kakao_101'),
+(102, NOW(), NOW(), 'student2', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생2', 1, '2001-02-02', 'KAKAO', 'kakao_102'),
+(103, NOW(), NOW(), 'student3', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생3', 0, '2002-03-03', 'NAVER', 'naver_103'),
+(104, NOW(), NOW(), 'student4', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생4', 1, '2000-04-04', 'GOOGLE', 'google_104'),
+(105, NOW(), NOW(), 'student5', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생5', 0, '2003-05-05', 'LOCAL', NULL),
+(106, NOW(), NOW(), 'student6', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생6', 1, '2001-06-06', 'LOCAL', NULL),
+(107, NOW(), NOW(), 'student7', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생7', 0, '2002-07-07', 'KAKAO', 'kakao_107'),
+(108, NOW(), NOW(), 'student8', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생8', 1, '2000-08-08', 'NAVER', 'naver_108'),
+(109, NOW(), NOW(), 'student9', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생9', 0, '2003-09-09', 'GOOGLE', 'google_109'),
+(110, NOW(), NOW(), 'student10', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생10', 1, '2001-10-10', 'LOCAL', NULL),
+(111, NOW(), NOW(), 'student11', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생11', 0, '2002-11-11', 'KAKAO', 'kakao_111'),
+(112, NOW(), NOW(), 'student12', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생12', 1, '2000-12-12', 'NAVER', 'naver_112'),
+(113, NOW(), NOW(), 'student13', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생13', 0, '2003-01-13', 'GOOGLE', 'google_113'),
+(114, NOW(), NOW(), 'student14', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생14', 1, '2001-02-14', 'LOCAL', NULL),
+(115, NOW(), NOW(), 'student15', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생15', 0, '2002-03-15', 'KAKAO', 'kakao_115'),
+(116, NOW(), NOW(), 'student16', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생16', 1, '2000-04-16', 'NAVER', 'naver_116'),
+(117, NOW(), NOW(), 'student17', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생17', 0, '2003-05-17', 'GOOGLE', 'google_117'),
+(118, NOW(), NOW(), 'student18', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생18', 1, '2001-06-18', 'LOCAL', NULL),
+(119, NOW(), NOW(), 'student19', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생19', 0, '2002-07-19', 'KAKAO', 'kakao_119'),
+(120, NOW(), NOW(), 'student20', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_STUDENT', 0, '학생20', 1, '2000-08-20', 'NAVER', 'naver_120');
 
-/* User Organization (Link Users to Orgs) */
-INSERT INTO user_organization (user_id, organization_id) VALUES
-(2, 1), (3, 2), (4, 4);
+INSERT INTO student_profile (user_id, nickname, university_id) VALUES 
+(101, '멋진학생1', 1), (102, '이쁜학생2', 1), (103, '공부왕3', 1), (104, '코딩천재4', 1), (105, '맛집탐방5', 1),
+(106, '카페러버6', 1), (107, '전북대짱7', 1), (108, '학점A+8', 1), (109, '졸업하자9', 1), (110, '새내기10', 1),
+(111, '복학생11', 1), (112, '휴학생12', 1), (113, '대학원생13', 1), (114, '취준생14', 1), (115, '알바몬15', 1),
+(116, '동아리장16', 1), (117, '과대17', 1), (118, '총무18', 1), (119, '인싸19', 1), (120, '아싸20', 1);
 
-/* Store (10개) */
-INSERT INTO store (user_id, name, branch, road_address, jibun_address, biz_reg_no, store_phone, introduction, operating_hours, store_status, need_to_check, check_reason, latitude, longitude, created_at, modified_at) VALUES
-(5, '맛있는 파스타', '본점', '서울시 강남구 역삼동 1', '서울시 강남구 역삼동 100-1', '123-45-78901', '02-1234-5678', '정통 이탈리안 파스타 전문점입니다.', '매일 11:00 - 22:00', 'ACTIVE', 0, NULL, 37.498095, 127.027610, NOW(), NOW()),
-(5, '시원한 카페', '대학로점', '서울시 종로구 명륜동 2', '서울시 종로구 명륜동 200-2', '234-56-89012', '02-2345-6789', '넓고 쾌적한 스터디하기 좋은 카페', '매일 09:00 - 23:00', 'ACTIVE', 0, NULL, 37.588284, 126.992224, NOW(), NOW()),
-(6, '매운 떡볶이', '신촌점', '서울시 서대문구 대현동 3', '서울시 서대문구 대현동 300-3', '345-67-90123', '02-3456-7890', '스트레스 확 풀리는 매운맛!', '매일 14:00 - 02:00', 'ACTIVE', 0, NULL, 37.556754, 126.945892, NOW(), NOW()),
-(6, '든든 국밥', '안암점', '서울시 성북구 안암동 4', '서울시 성북구 안암동 400-4', '456-78-01234', '02-4567-8901', '24시간 정성껏 끓인 국밥', '24시간 영업', 'ACTIVE', 0, NULL, 37.586419, 127.029053, NOW(), NOW()),
-(7, '바삭 치킨', '왕십리점', '서울시 성동구 행당동 5', '서울시 성동구 행당동 500-5', '567-89-12345', '02-5678-9012', '겉바속촉 치킨의 정석', '매일 16:00 - 04:00', 'ACTIVE', 0, NULL, 37.561726, 127.037409, NOW(), NOW()),
-(7, '피자 천국', '흑석점', '서울시 동작구 흑석동 6', '서울시 동작구 흑석동 600-6', '678-90-23456', '02-6789-0123', '토핑이 듬뿍 들어간 수제 피자', '매일 11:30 - 23:30', 'ACTIVE', 0, NULL, 37.508821, 126.963784, NOW(), NOW()),
-(null, '버거 대장', '회기점', '서울시 동대문구 회기동 7', '서울시 동대문구 회기동 700-7', '789-01-34567', '02-7890-1234', '육즙 가득한 수제 버거 맛집', '매일 10:30 - 21:00', 'UNCLAIMED', 0, NULL, 37.589808, 127.057913, NOW(), NOW()),
-(null, '초밥 달인', '이문동점', '서울시 동대문구 이문동 8', '서울시 동대문구 이문동 800-8', '890-12-45678', '02-8901-2345', '신선한 재료로 만드는 프리미엄 초밥', '매일 11:30 - 22:00, 브레이크타임 15:00-17:00', 'UNCLAIMED', 0, NULL, 37.595605, 127.062831, NOW(), NOW()),
-(null, '감성 포차', '신수동점', '서울시 마포구 신수동 9', '서울시 마포구 신수동 900-9', '901-23-56789', '02-9012-3456', '분위기 좋은 감성 요리 주점', '매일 18:00 - 05:00', 'UNCLAIMED', 0, NULL, 37.547146, 126.936551, NOW(), NOW()),
-(null, '달콤 베이커리', '성수점', '서울시 성동구 성수동 10', '서울시 성동구 성수동 1000-10', '012-34-67890', '02-0123-4567', '매일 아침 구워내는 신선한 빵', '매일 08:00 - 21:00', 'UNCLAIMED', 0, NULL, 37.544569, 127.056073, NOW(), NOW());
+-- 3. Organizations
+INSERT INTO user (user_id, created_at, modified_at, username, password, role, deleted, name, social_type) VALUES 
+(50, NOW(), NOW(), 'jbnu_council', '$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmjMaJJJwal3vSRl0ep2', 'ROLE_COUNCIL', 0, '전북대총학', 'LOCAL');
 
-/* Store University (Link Stores to Universities) */
-INSERT INTO store_university (store_id, university_id) VALUES
-(1, 1), (2, 5), (3, 3), (4, 4), (5, 6), (6, 8), (7, 9), (8, 10), (9, 7), (10, 6);
+INSERT INTO council_profile (user_id, university_id) VALUES (50, 1);
 
-/* Partnership (10개) */
-INSERT INTO partnership (organization_id, store_id, benefit, starts_at, ends_at, created_at, modified_at) VALUES
-(1, 1, '테이블당 음료수 1개 서비스', '2024-01-01', '2024-12-31', NOW(), NOW()),
-(8, 2, '모든 음료 10% 할인', '2024-02-01', '2024-12-31', NOW(), NOW()),
-(6, 3, '세트 메뉴 2000원 할인', '2024-03-01', '2025-02-28', NOW(), NOW()),
-(7, 4, '공기밥 무한 리필', '2024-01-01', '2024-06-30', NOW(), NOW()),
-(9, 5, '포장 주문 시 2000원 할인', '2024-01-01', '2024-12-31', NOW(), NOW()),
-(10, 6, '치즈 토핑 무료', '2024-04-01', '2024-12-31', NOW(), NOW()),
-(2, 1, '학생증 제시 시 5% 추가 할인', '2024-01-01', '2024-12-31', NOW(), NOW()),
-(4, 3, '쿨피스 무료 증정', '2024-01-01', '2024-12-31', NOW(), NOW()),
-(3, 1, '학과 행사 시 단체석 우선 예약', '2024-01-01', '2024-12-31', NOW(), NOW()),
-(5, 4, '수육 주문 시 소주 1병', '2024-01-01', '2024-12-31', NOW(), NOW());
+INSERT INTO organization (organization_id, created_at, modified_at, university_id, user_id, category, name, parent_id) VALUES 
+(1, NOW(), NOW(), 1, 50, 'STUDENT_COUNCIL', '전북대학교 총학생회', NULL);
 
-/* Item (10개 - Store 1~3 위주) */
-INSERT INTO item (store_id, name, price, is_sold_out, is_hidden, is_representative, created_at, modified_at) VALUES
-(1, '까르보나라', 12000, 0, 0, 1, NOW(), NOW()),
-(1, '알리오 올리오', 10000, 0, 0, 0, NOW(), NOW()),
-(1, '토마토 파스타', 11000, 0, 0, 0, NOW(), NOW()),
-(2, '아메리카노', 4000, 0, 0, 1, NOW(), NOW()),
-(2, '카페라떼', 4500, 0, 0, 0, NOW(), NOW()),
-(3, '떡볶이 1인분', 4000, 0, 0, 1, NOW(), NOW()),
-(3, '모듬 튀김', 5000, 0, 0, 0, NOW(), NOW()),
-(4, '순대국밥', 9000, 0, 0, 1, NOW(), NOW()),
-(5, '후라이드 치킨', 18000, 0, 0, 1, NOW(), NOW()),
-(6, '콤비네이션 피자', 20000, 0, 0, 1, NOW(), NOW());
+INSERT INTO organization (organization_id, created_at, modified_at, university_id, user_id, category, name, parent_id) VALUES 
+(10, NOW(), NOW(), 1, 50, 'COLLEGE', '공과대학', 1),
+(11, NOW(), NOW(), 1, 50, 'COLLEGE', '농업생명과학대학', 1),
+(12, NOW(), NOW(), 1, 50, 'COLLEGE', '인문대학', 1),
+(13, NOW(), NOW(), 1, 50, 'COLLEGE', '상과대학', 1),
+(14, NOW(), NOW(), 1, 50, 'COLLEGE', '예술대학', 1);
 
-/* Coupon (10개) */
-INSERT INTO coupon (store_id, title, total_quantity, limit_per_user, status, created_at, modified_at) VALUES
-(1, '오픈 기념 10% 할인', 100, 1, 'ACTIVE', NOW(), NOW()),
-(2, '신메뉴 무료 시음권', 50, 1, 'ACTIVE', NOW(), NOW()),
-(3, '떡볶이 사이즈 업', 100, 1, 'ACTIVE', NOW(), NOW()),
-(4, '음료수 무료 쿠폰', 200, 2, 'ACTIVE', NOW(), NOW()),
-(5, '생맥주 500cc 1잔', 100, 1, 'ACTIVE', NOW(), NOW()),
-(6, '사이드 메뉴 1종 무료', 50, 1, 'ACTIVE', NOW(), NOW()),
-(7, '무료 토핑 추가', 100, 1, 'ACTIVE', NOW(), NOW()),
-(1, '재방문 5% 할인', 1000, 10, 'ACTIVE', NOW(), NOW()),
-(2, '아메리카노 1+1', 50, 1, 'EXPIRED', NOW(), NOW()),
-(3, '튀김 서비스', 10, 1, 'STOPPED', NOW(), NOW());
+INSERT INTO organization (organization_id, created_at, modified_at, university_id, user_id, category, name, parent_id) VALUES 
+(100, NOW(), NOW(), 1, 50, 'DEPARTMENT', '소프트웨어공학과', 10),
+(101, NOW(), NOW(), 1, 50, 'DEPARTMENT', '컴퓨터공학부', 10),
+(102, NOW(), NOW(), 1, 50, 'DEPARTMENT', '기계설계공학부', 10),
+(103, NOW(), NOW(), 1, 50, 'DEPARTMENT', '농생물학과', 11),
+(104, NOW(), NOW(), 1, 50, 'DEPARTMENT', '영어영문학과', 12),
+(105, NOW(), NOW(), 1, 50, 'DEPARTMENT', '경영학과', 13),
+(106, NOW(), NOW(), 1, 50, 'DEPARTMENT', '산업디자인학과', 14);
 
-/* Review (10개) */
-INSERT INTO review (store_id, user_id, rating, content, is_verified, is_private, like_count, report_count, status, created_at, modified_at) VALUES
-(1, 8, 5, '정말 맛있어요!', 1, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(1, 9, 4, '가성비 좋습니다.', 1, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(2, 10, 5, '커피 향이 너무 좋아요.', 1, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(2, 8, 3, '자리가 좀 좁아요.', 0, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(3, 9, 5, '매운데 맛있네요.', 1, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(3, 10, 4, '튀김이 바삭합니다.', 0, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(4, 8, 5, '국밥이 정말 든든해요.', 1, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(5, 9, 5, '치맥하기 딱 좋습니다.', 1, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(6, 10, 2, '배달이 너무 늦었어요.', 0, 0, 0, 0, 'PUBLISHED', NOW(), NOW()),
-(1, 8, 5, '또 가고 싶어요.', 1, 0, 0, 0, 'PUBLISHED', NOW(), NOW());
+-- 4. Stores (Around Center: 35.846833, 127.12936)
+-- 4.1 Store 1: 팀 레스토랑
+INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, road_address, jibun_address, latitude, longitude, store_phone, store_status, user_id, introduction, operating_hours) VALUES 
+(1, NOW(), NOW(), '팀 레스토랑', '전북대점', '111-22-33333', '전북 전주시 덕진구 명륜4길 10', '전북 전주시 덕진구 덕진동1가 1262-4', 35.847133, 127.129060, '063-272-0000', 'ACTIVE', 10, '전북대 오래된 파스타 맛집, 팀입니다.', '{"Mon": "11:00-21:00", "Tue": "11:00-21:00", "Wed": "11:00-21:00", "Thu": "11:00-21:00", "Fri": "11:00-21:00", "Sat": "11:00-21:00", "Sun": "Closed"}');
 
-/* Review Like (10개) */
-INSERT INTO review_like (review_id, user_id, created_at, modified_at) VALUES
-(1, 9, NOW(), NOW()), (1, 10, NOW(), NOW()),
-(2, 8, NOW(), NOW()), (3, 8, NOW(), NOW()),
-(5, 8, NOW(), NOW()), (5, 10, NOW(), NOW()),
-(7, 9, NOW(), NOW()), (7, 10, NOW(), NOW()),
-(8, 8, NOW(), NOW()), (8, 9, NOW(), NOW());
+INSERT INTO store_categories (store_id, category) VALUES (1, 'RESTAURANT'), (1, 'ETC');
+INSERT INTO store_moods (store_id, mood) VALUES (1, 'ROMANTIC'), (1, 'GROUP_GATHERING');
+INSERT INTO store_university (store_id, university_id) VALUES (1, 1);
 
-/* Store Claim (10개 - 5 PENDING, 3 APPROVED, 2 REJECTED) */
-INSERT INTO store_claim (store_id, user_id, biz_reg_no, representative_name, store_name, license_image_url, status, created_at, modified_at) VALUES
-(7, 5, '123-45-67890', '김점주', '버거 대장', 'http://img.com/1', 'PENDING', NOW(), NOW()),
-(8, 6, '234-56-78901', '이점주', '초밥 달인', 'http://img.com/2', 'PENDING', NOW(), NOW()),
-(9, 7, '345-67-89012', '박점주', '감성 포차', 'http://img.com/3', 'PENDING', NOW(), NOW()),
-(10, 5, '456-78-90123', '김점주', '달콤 베이커리', 'http://img.com/4', 'PENDING', NOW(), NOW()),
-(1, 5, '000-00-00000', '김점주', '맛있는 파스타', 'http://img.com/5', 'APPROVED', NOW(), NOW()), -- Already owner of Store 1
-(2, 5, '000-00-00001', '김점주', '시원한 카페', 'http://img.com/6', 'APPROVED', NOW(), NOW()), -- Already owner of Store 2
-(3, 6, '000-00-00002', '이점주', '매운 떡볶이', 'http://img.com/7', 'APPROVED', NOW(), NOW()), -- Already owner of Store 3
-(1, 6, '111-11-11111', '이점주', '맛있는 파스타', 'http://img.com/8', 'REJECTED', NOW(), NOW()), -- Reject
-(7, 6, '222-22-22222', '이점주', '버거 대장', 'http://img.com/9', 'REJECTED', NOW(), NOW()), -- Reject
-(9, 5, '333-33-33333', '김점주', '감성 포차', 'http://img.com/10', 'PENDING', NOW(), NOW());
+INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (1, NOW(), NOW(), '파스타', 1), (2, NOW(), NOW(), '리조또', 1), (3, NOW(), NOW(), '음료', 1);
+INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
+(1, NOW(), NOW(), '까르보나라', 13000, '진한 크림 소스의 파스타', 0, 1, 0, 'BEST', 1, 1),
+(2, NOW(), NOW(), '해산물 토마토 파스타', 14000, '신선한 해산물이 가득', 0, 0, 0, NULL, 1, 1),
+(3, NOW(), NOW(), '버섯 크림 리조또', 13500, '풍미 가득한 버섯 리조또', 0, 1, 0, 'HOT', 1, 2),
+(4, NOW(), NOW(), '콜라', 2000, '코카콜라 355ml', 0, 0, 0, NULL, 1, 3);
+
+-- 4.2 Store 2: 맘스터치
+INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, road_address, jibun_address, latitude, longitude, store_phone, store_status, user_id, introduction, operating_hours) VALUES 
+(2, NOW(), NOW(), '맘스터치', '전북대본점', '222-33-44444', '전북 전주시 덕진구 명륜3길 15', '전북 전주시 덕진구 덕진동1가 1314-1', 35.846433, 127.129960, '063-271-1234', 'ACTIVE', 11, '빠르고 맛있는 치킨 버거!', '{"Everyday": "10:30-22:00"}');
+
+INSERT INTO store_categories (store_id, category) VALUES (2, 'RESTAURANT');
+INSERT INTO store_moods (store_id, mood) VALUES (2, 'SOLO_DINING'), (2, 'LATE_NIGHT');
+INSERT INTO store_university (store_id, university_id) VALUES (2, 1);
+
+INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (4, NOW(), NOW(), '버거', 2), (5, NOW(), NOW(), '치킨', 2), (6, NOW(), NOW(), '사이드', 2);
+INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
+(5, NOW(), NOW(), '싸이버거 세트', 6900, '맘스터치 시그니처', 0, 1, 0, 'BEST', 2, 4),
+(6, NOW(), NOW(), '불싸이버거', 4800, '매운맛 싸이버거', 0, 0, 0, NULL, 2, 4),
+(7, NOW(), NOW(), '후라이드치킨', 16000, '바삭한 치킨', 0, 0, 0, NULL, 2, 5),
+(8, NOW(), NOW(), '감자튀김', 2000, '케이준 스타일', 0, 0, 0, NULL, 2, 6);
+
+-- 4.3 Store 3: 알촌
+INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, road_address, jibun_address, latitude, longitude, store_phone, store_status, user_id, introduction, operating_hours) VALUES 
+(3, NOW(), NOW(), '알촌', '전북대점', '333-44-55555', '전북 전주시 덕진구 권삼득로 333', '전북 전주시 덕진구 금암동 664-14', 35.846033, 127.128560, '063-270-5555', 'ACTIVE', 12, '가성비 최고의 알밥집', '{"Mon-Fri": "10:00-20:00", "Sat-Sun": "11:00-19:00"}');
+
+INSERT INTO store_categories (store_id, category) VALUES (3, 'RESTAURANT');
+INSERT INTO store_moods (store_id, mood) VALUES (3, 'SOLO_DINING');
+INSERT INTO store_university (store_id, university_id) VALUES (3, 1);
+
+INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (7, NOW(), NOW(), '메인메뉴', 3);
+INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
+(9, NOW(), NOW(), '약매알밥', 5500, '약간 매운 알밥', 0, 1, 0, 'BEST', 3, 7),
+(10, NOW(), NOW(), '매콤알밥', 5800, '매콤한 알밥', 0, 0, 0, 'HOT', 3, 7),
+(11, NOW(), NOW(), '짜장알밥', 6000, '짜장 소스 알밥', 0, 0, 0, NULL, 3, 7);
+
+-- 4.4 Store 4: 컴포즈커피
+INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, road_address, jibun_address, latitude, longitude, store_phone, store_status, user_id, introduction, operating_hours) VALUES 
+(4, NOW(), NOW(), '컴포즈커피', '전북대구정문점', NULL, '전북 전주시 덕진구 명륜4길 1', '전북 전주시 덕진구 덕진동1가 1261', 35.847333, 127.129260, '063-222-3333', 'UNCLAIMED', NULL, '대용량 고품질 커피', '{"Everyday": "08:00-23:00"}');
+
+INSERT INTO store_categories (store_id, category) VALUES (4, 'CAFE');
+INSERT INTO store_university (store_id, university_id) VALUES (4, 1);
+INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (8, NOW(), NOW(), 'Coffee', 4);
+INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
+(12, NOW(), NOW(), '아메리카노', 1500, '고소한 원두', 0, 1, 0, 'BEST', 4, 8),
+(13, NOW(), NOW(), '카페라떼', 2900, '부드러운 우유', 0, 0, 0, NULL, 4, 8);
+
+-- 4.5 Store 5: 슈퍼스타 코인노래방
+INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, road_address, jibun_address, latitude, longitude, store_phone, store_status, user_id, introduction, operating_hours) VALUES 
+(5, NOW(), NOW(), '슈퍼스타 코인노래방', '전주점', '555-66-77777', '전북 전주시 덕진구 명륜4길 20', '전북 전주시 덕진구 덕진동1가 1263-1', 35.846633, 127.129760, '063-111-2222', 'ACTIVE', 14, '최신 시설 깨끗한 코인노래방', '{"Everyday": "11:00-02:00"}');
+
+INSERT INTO store_categories (store_id, category) VALUES (5, 'ENTERTAINMENT');
+INSERT INTO store_moods (store_id, mood) VALUES (5, 'GROUP_GATHERING'), (5, 'SOLO_DINING');
+INSERT INTO store_university (store_id, university_id) VALUES (5, 1);
+
+INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (9, NOW(), NOW(), '요금', 5);
+INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
+(14, NOW(), NOW(), '3곡', 1000, '천원에 3곡', 0, 1, 0, NULL, 5, 9),
+(15, NOW(), NOW(), '1시간', 5000, '한시간 무제한', 0, 0, 0, 'BEST', 5, 9);
+
+-- 4.6 Store 6: 광장포차
+INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, road_address, jibun_address, latitude, longitude, store_phone, store_status, user_id, introduction, operating_hours) VALUES 
+(6, NOW(), NOW(), '광장포차', NULL, '111-22-33333', '전북 전주시 덕진구 권삼득로 300', '전북 전주시 덕진구 금암동 111-1', 35.845833, 127.128360, '063-777-8888', 'ACTIVE', 10, '대학생들의 성지, 낭만 포차', '{"Everyday": "17:00-05:00"}');
+
+INSERT INTO store_categories (store_id, category) VALUES (6, 'BAR');
+INSERT INTO store_moods (store_id, mood) VALUES (6, 'GROUP_GATHERING'), (6, 'LATE_NIGHT');
+INSERT INTO store_university (store_id, university_id) VALUES (6, 1);
+
+INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (10, NOW(), NOW(), '안주', 6), (11, NOW(), NOW(), '주류', 6);
+INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
+(16, NOW(), NOW(), '해물파전', 15000, '오징어가 듬뿍', 0, 1, 0, 'BEST', 6, 10),
+(17, NOW(), NOW(), '어묵탕', 12000, '소주 안주로 딱', 0, 0, 0, 'HOT', 6, 10),
+(18, NOW(), NOW(), '소주', 5000, '참이슬/처음처럼', 0, 0, 0, NULL, 6, 11);
+
+
+-- 5. Partnership & Coupons
+INSERT INTO partnership (created_at, modified_at, benefit, starts_at, ends_at, store_id, organization_id) VALUES 
+(NOW(), NOW(), '전 메뉴 10% 할인 (동반 1인 포함)', '2025-01-01', '2025-12-31', 1, 100),
+(NOW(), NOW(), '음료수 서비스', '2025-03-01', '2025-06-30', 3, 101);
+
+INSERT INTO coupon (coupon_id, created_at, modified_at, title, description, issue_starts_at, issue_ends_at, total_quantity, limit_per_user, status, store_id, target_organization_id) VALUES 
+(1, NOW(), NOW(), '신학기 1000원 할인 쿠폰', '모든 메뉴에 적용 가능합니다.', '2025-03-01', '2025-03-31', 100, 1, 'ACTIVE', 1, NULL),
+(2, NOW(), NOW(), '감자튀김 무료 증정', '세트 메뉴 주문 시 사용 가능', '2025-01-01', '2025-12-31', 50, 1, 'ACTIVE', 2, 100);
+
+INSERT INTO coupon_item (coupon_id, item_id) VALUES (2, 8);
+
+-- 6. Events
+INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status) VALUES 
+(1, NOW(), NOW(), '전북대학교 대동제', '2025년 전북대 대동제에 여러분을 초대합니다!', 35.846833, 127.129360, '2025-05-20 10:00:00', '2025-05-22 23:00:00', 'UPCOMING'),
+(2, NOW(), NOW(), '소프트웨어공학과 플리마켓', '다양한 굿즈와 중고 전공서적 판매', 35.846100, 127.129600, '2025-04-01 12:00:00', '2025-04-01 18:00:00', 'UPCOMING');
+
+INSERT INTO event_types (event_id, event_type) VALUES (1, 'SCHOOL_EVENT'), (1, 'PERFORMANCE'), (2, 'FLEA_MARKET'), (2, 'COMMUNITY');
+
+INSERT INTO event_image (created_at, modified_at, event_id, image_url, order_index) VALUES 
+(NOW(), NOW(), 1, 'https://example.com/festival1.jpg', 0),
+(NOW(), NOW(), 2, 'https://example.com/flea1.jpg', 0);
+
+-- 7. Reviews & Likes
+INSERT INTO review (review_id, created_at, modified_at, user_id, store_id, is_verified, rating, content, status, report_count, like_count, is_private) VALUES 
+(1, NOW(), NOW(), 101, 1, 1, 5, '진짜 맛있어요! 까르보나라 강추', 'PUBLISHED', 0, 2, 0),
+(2, NOW(), NOW(), 102, 1, 0, 4, '분위기 좋고 친절해요', 'PUBLISHED', 0, 1, 0),
+(3, NOW(), NOW(), 103, 1, 1, 5, '데이트하기 딱 좋은 곳', 'PUBLISHED', 0, 3, 0);
+
+INSERT INTO review (review_id, created_at, modified_at, user_id, store_id, is_verified, rating, content, status, report_count, like_count, is_private) VALUES 
+(4, NOW(), NOW(), 104, 2, 1, 5, '싸이버거는 진리죠', 'PUBLISHED', 0, 5, 0),
+(5, NOW(), NOW(), 105, 2, 0, 3, '사람이 너무 많아서 오래 기다렸어요', 'PUBLISHED', 0, 0, 0),
+(6, NOW(), NOW(), 106, 2, 1, 4, '감튀 맛집', 'PUBLISHED', 0, 1, 0);
+
+INSERT INTO favorite_store (created_at, modified_at, user_id, store_id) VALUES 
+(NOW(), NOW(), 101, 1), (NOW(), NOW(), 101, 2),
+(NOW(), NOW(), 102, 1), (NOW(), NOW(), 102, 5),
+(NOW(), NOW(), 103, 3), (NOW(), NOW(), 104, 2);
+
+-- 8. Store News
+INSERT INTO store_news (id, created_at, modified_at, store_id, title, content, like_count, comment_count) VALUES 
+(1, NOW(), NOW(), 1, '신메뉴 출시 안내', '이번 시즌 새로운 메뉴가 출시되었습니다. 많은 관심 부탁드려요!', 10, 2),
+(2, NOW(), NOW(), 2, '임시 휴무 공지', '내부 공사로 인해 하루 쉬어갑니다.', 5, 1);
+
+INSERT INTO store_news_comment (created_at, modified_at, store_news_id, user_id, content) VALUES 
+(NOW(), NOW(), 1, 101, '오 먹으러 갈게요!'),
+(NOW(), NOW(), 1, 102, '무슨 메뉴인가요?'),
+(NOW(), NOW(), 2, 104, '헉 헛걸음할뻔');
+
+/* 외래 키 제약 조건 검사를 다시 켭니다 */
+SET FOREIGN_KEY_CHECKS = 1;
