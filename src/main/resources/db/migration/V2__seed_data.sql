@@ -90,6 +90,7 @@ INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, 
 INSERT INTO store_categories (store_id, category) VALUES (1, 'RESTAURANT'), (1, 'ETC');
 INSERT INTO store_moods (store_id, mood) VALUES (1, 'ROMANTIC'), (1, 'GROUP_GATHERING');
 INSERT INTO store_university (store_id, university_id) VALUES (1, 1);
+INSERT INTO store_image (store_id, image_url, order_index) VALUES (1, 'https://example.com/team1.jpg', 0), (1, 'https://example.com/team2.jpg', 1);
 
 INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (1, NOW(), NOW(), '파스타', 1), (2, NOW(), NOW(), '리조또', 1), (3, NOW(), NOW(), '음료', 1);
 INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
@@ -105,6 +106,7 @@ INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, 
 INSERT INTO store_categories (store_id, category) VALUES (2, 'RESTAURANT');
 INSERT INTO store_moods (store_id, mood) VALUES (2, 'SOLO_DINING'), (2, 'LATE_NIGHT');
 INSERT INTO store_university (store_id, university_id) VALUES (2, 1);
+INSERT INTO store_image (store_id, image_url, order_index) VALUES (2, 'https://example.com/moms1.jpg', 0);
 
 INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (4, NOW(), NOW(), '버거', 2), (5, NOW(), NOW(), '치킨', 2), (6, NOW(), NOW(), '사이드', 2);
 INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
@@ -120,6 +122,7 @@ INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, 
 INSERT INTO store_categories (store_id, category) VALUES (3, 'RESTAURANT');
 INSERT INTO store_moods (store_id, mood) VALUES (3, 'SOLO_DINING');
 INSERT INTO store_university (store_id, university_id) VALUES (3, 1);
+INSERT INTO store_image (store_id, image_url, order_index) VALUES (3, 'https://example.com/alchon1.jpg', 0);
 
 INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (7, NOW(), NOW(), '메인메뉴', 3);
 INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
@@ -133,6 +136,8 @@ INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, 
 
 INSERT INTO store_categories (store_id, category) VALUES (4, 'CAFE');
 INSERT INTO store_university (store_id, university_id) VALUES (4, 1);
+INSERT INTO store_image (store_id, image_url, order_index) VALUES (4, 'https://example.com/compose1.jpg', 0);
+
 INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (8, NOW(), NOW(), 'Coffee', 4);
 INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
 (12, NOW(), NOW(), '아메리카노', 1500, '고소한 원두', 0, 1, 0, 'BEST', 4, 8),
@@ -145,6 +150,7 @@ INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, 
 INSERT INTO store_categories (store_id, category) VALUES (5, 'ENTERTAINMENT');
 INSERT INTO store_moods (store_id, mood) VALUES (5, 'GROUP_GATHERING'), (5, 'SOLO_DINING');
 INSERT INTO store_university (store_id, university_id) VALUES (5, 1);
+INSERT INTO store_image (store_id, image_url, order_index) VALUES (5, 'https://example.com/coin1.jpg', 0);
 
 INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (9, NOW(), NOW(), '요금', 5);
 INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
@@ -158,6 +164,7 @@ INSERT INTO store (store_id, created_at, modified_at, name, branch, biz_reg_no, 
 INSERT INTO store_categories (store_id, category) VALUES (6, 'BAR');
 INSERT INTO store_moods (store_id, mood) VALUES (6, 'GROUP_GATHERING'), (6, 'LATE_NIGHT');
 INSERT INTO store_university (store_id, university_id) VALUES (6, 1);
+INSERT INTO store_image (store_id, image_url, order_index) VALUES (6, 'https://example.com/pocha1.jpg', 0);
 
 INSERT INTO item_category (item_category_id, created_at, modified_at, name, store_id) VALUES (10, NOW(), NOW(), '안주', 6), (11, NOW(), NOW(), '주류', 6);
 INSERT INTO item (item_id, created_at, modified_at, name, price, description, is_sold_out, is_representative, is_hidden, badge, store_id, item_category_id) VALUES 
@@ -194,10 +201,22 @@ INSERT INTO review (review_id, created_at, modified_at, user_id, store_id, is_ve
 (2, NOW(), NOW(), 102, 1, 0, 4, '분위기 좋고 친절해요', 'PUBLISHED', 0, 1, 0),
 (3, NOW(), NOW(), 103, 1, 1, 5, '데이트하기 딱 좋은 곳', 'PUBLISHED', 0, 3, 0);
 
+INSERT INTO review_like (created_at, modified_at, user_id, review_id) VALUES
+(NOW(), NOW(), 102, 1), (NOW(), NOW(), 103, 1), -- Review 1 (2 likes)
+(NOW(), NOW(), 101, 2), -- Review 2 (1 like)
+(NOW(), NOW(), 101, 3), (NOW(), NOW(), 102, 3), (NOW(), NOW(), 104, 3); -- Review 3 (3 likes)
+
+INSERT INTO review_image (review_id, image_url, order_index) VALUES
+(1, 'https://example.com/pasta_review1.jpg', 0);
+
 INSERT INTO review (review_id, created_at, modified_at, user_id, store_id, is_verified, rating, content, status, report_count, like_count, is_private) VALUES 
 (4, NOW(), NOW(), 104, 2, 1, 5, '싸이버거는 진리죠', 'PUBLISHED', 0, 5, 0),
 (5, NOW(), NOW(), 105, 2, 0, 3, '사람이 너무 많아서 오래 기다렸어요', 'PUBLISHED', 0, 0, 0),
 (6, NOW(), NOW(), 106, 2, 1, 4, '감튀 맛집', 'PUBLISHED', 0, 1, 0);
+
+INSERT INTO review_like (created_at, modified_at, user_id, review_id) VALUES
+(NOW(), NOW(), 101, 4), (NOW(), NOW(), 102, 4), (NOW(), NOW(), 103, 4), (NOW(), NOW(), 105, 4), (NOW(), NOW(), 106, 4), -- Review 4 (5 likes)
+(NOW(), NOW(), 104, 6); -- Review 6 (1 like)
 
 INSERT INTO favorite_store (created_at, modified_at, user_id, store_id) VALUES 
 (NOW(), NOW(), 101, 1), (NOW(), NOW(), 101, 2),
@@ -208,6 +227,11 @@ INSERT INTO favorite_store (created_at, modified_at, user_id, store_id) VALUES
 INSERT INTO store_news (id, created_at, modified_at, store_id, title, content, like_count, comment_count) VALUES 
 (1, NOW(), NOW(), 1, '신메뉴 출시 안내', '이번 시즌 새로운 메뉴가 출시되었습니다. 많은 관심 부탁드려요!', 10, 2),
 (2, NOW(), NOW(), 2, '임시 휴무 공지', '내부 공사로 인해 하루 쉬어갑니다.', 5, 1);
+
+INSERT INTO store_news_like (created_at, modified_at, store_news_id, user_id) VALUES
+(NOW(), NOW(), 1, 101), (NOW(), NOW(), 1, 102), (NOW(), NOW(), 1, 103), (NOW(), NOW(), 1, 104), (NOW(), NOW(), 1, 105),
+(NOW(), NOW(), 1, 106), (NOW(), NOW(), 1, 107), (NOW(), NOW(), 1, 108), (NOW(), NOW(), 1, 109), (NOW(), NOW(), 1, 110), -- News 1 (10 likes)
+(NOW(), NOW(), 2, 101), (NOW(), NOW(), 2, 102), (NOW(), NOW(), 2, 103), (NOW(), NOW(), 2, 104), (NOW(), NOW(), 2, 105); -- News 2 (5 likes)
 
 INSERT INTO store_news_comment (created_at, modified_at, store_news_id, user_id, content) VALUES 
 (NOW(), NOW(), 1, 101, '오 먹으러 갈게요!'),

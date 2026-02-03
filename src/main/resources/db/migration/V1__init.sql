@@ -72,6 +72,13 @@ create table withdrawal_reason (
     foreign key (feedback_id) references withdrawal_feedback (id)
 );
 
+/* Refresh Token */
+create table refresh_token (
+    user_id bigint not null primary key,
+    token varchar(255),
+    expiry_date datetime(6)
+);
+
 /* Organization */
 create table organization (
     organization_id bigint auto_increment primary key,
