@@ -34,8 +34,10 @@ public class StoreResponse {
     private LocalDate holidayStartsAt;
     private LocalDate holidayEndsAt;
     private Boolean isSuspended;
+    private Boolean isPartnership; // 제휴 여부
+    private Boolean hasCoupon; // 쿠폰 보유 여부
 
-    public static StoreResponse of(Store store, Double averageRating, Integer reviewCount) {
+    public static StoreResponse of(Store store, Double averageRating, Integer reviewCount, Boolean isPartnership, Boolean hasCoupon) {
         return StoreResponse.builder()
                 .id(store.getId())
                 .userId(store.getUser() != null ? store.getUser().getId() : null)
@@ -56,10 +58,12 @@ public class StoreResponse {
                 .holidayStartsAt(store.getHolidayStartsAt())
                 .holidayEndsAt(store.getHolidayEndsAt())
                 .isSuspended(store.getIsSuspended())
+                .isPartnership(isPartnership)
+                .hasCoupon(hasCoupon)
                 .build();
     }
 
     public static StoreResponse from(Store store) {
-        return of(store, 0.0, 0);
+        return of(store, 0.0, 0, false, false);
     }
 }

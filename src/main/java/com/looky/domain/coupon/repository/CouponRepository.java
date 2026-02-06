@@ -34,4 +34,13 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
             @Param("storeIds") List<Long> storeIds,
             @Param("now") LocalDateTime now
     );
+
+    @Query("SELECT COUNT(c) > 0 FROM Coupon c " +
+           "WHERE c.store.id = :storeId " +
+           "AND c.issueStartsAt <= :now AND c.issueEndsAt >= :now " +
+           "AND c.status = 'ACTIVE'")
+    boolean existsActiveCoupon(
+            @Param("storeId") Long storeId,
+            @Param("now") LocalDateTime now
+    );
 }

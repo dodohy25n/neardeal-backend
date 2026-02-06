@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.looky.domain.user.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,48 +53,6 @@ public class StoreController {
         ) throws IOException {
                 Long storeId = storeService.createStore(principalDetails.getUser(), request, images);
                 return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(storeId));
-        }
-
-        @Operation(summary = "[공통] 상점 단건 조회", description = "상점 ID로 상점의 상세 정보를 조회합니다.")
-        @ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "상점 조회 성공"),
-                @ApiResponse(responseCode = "404", description = "상점 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
-        })
-        @GetMapping("/{storeId}")
-        public ResponseEntity<CommonResponse<StoreResponse>> getStore(
-                        @Parameter(description = "상점 ID") @PathVariable Long storeId) {
-                StoreResponse response = storeService.getStore(storeId);
-                return ResponseEntity.ok(CommonResponse.success(response));
-        }
-
-        @Operation(summary = "[공통] 상점 목록 조회", description = "전체 상점 목록을 페이징하여 조회합니다.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "상점 목록 조회 성공")
-        })
-        @GetMapping
-        public ResponseEntity<CommonResponse<PageResponse<StoreResponse>>> getStores(
-                @Parameter(description = "검색 키워드 (상점 이름)") @RequestParam(required = false) String keyword,
-                @Parameter(description = "카테고리 필터 (복수 선택 가능)") @RequestParam(required = false) List<StoreCategory> categories,
-                @Parameter(description = "분위기 필터 (복수 선택 가능)") @RequestParam(required = false) List<StoreMood> moods,
-                @Parameter(description = "대학(상권) ID 필터") @RequestParam(required = false) Long universityId,
-                @Parameter(description = "페이징 정보 (page, size, sort)") @PageableDefault(size = 10) Pageable pageable
-        ) {
-                PageResponse<StoreResponse> response = storeService.getStores(keyword, categories, moods, universityId, pageable);
-                return ResponseEntity.ok(CommonResponse.success(response));
-        }
-
-        @Operation(summary = "[공통] 주위 상점 조회", description = "위도, 경도, 반경(km)을 기준으로 주위 상점을 조회합니다.")
-        @ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "상점 목록 조회 성공")
-        })
-        @GetMapping("/nearby")
-        public ResponseEntity<CommonResponse<List<StoreResponse>>> getNearbyStores(
-                @Parameter(description = "위도") @RequestParam Double latitude,
-                @Parameter(description = "경도") @RequestParam Double longitude,
-                @Parameter(description = "반경(km)") @RequestParam Double radius
-        ) {
-                List<StoreResponse> response = storeService.getNearbyStores(latitude, longitude, radius);
-                return ResponseEntity.ok(CommonResponse.success(response));
         }
 
         @Operation(summary = "[점주] 상점 정보 수정", description = "상점 정보를 수정합니다. (본인 상점만 가능)")
@@ -165,6 +124,54 @@ public class StoreController {
                 return ResponseEntity.ok(CommonResponse.success(response));
         }
 
+        @Operation(summary = "[학생] 상점 단건 조회", description = "상점 ID로 상점의 상세 정보를 조회합니다.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "상점 조회 성공"),
+                @ApiResponse(responseCode = "404", description = "상점 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+        })
+        @GetMapping("/{storeId}")
+        public ResponseEntity<CommonResponse<StoreResponse>> getStore(
+                        @Parameter(description = "상점 ID") @PathVariable Long storeId,
+                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails) {
+                User user = principalDetails != null ? principalDetails.getUser() : null;
+                StoreResponse response = storeService.getStore(storeId, user);
+                return ResponseEntity.ok(CommonResponse.success(response));
+        }
+
+        @Operation(summary = "[학생] 상점 목록 조회", description = "전체 상점 목록을 페이징하여 조회합니다.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "상점 목록 조회 성공")
+        })
+        @GetMapping
+        public ResponseEntity<CommonResponse<PageResponse<StoreResponse>>> getStores(
+                @Parameter(description = "검색 키워드 (상점 이름)") @RequestParam(required = false) String keyword,
+                @Parameter(description = "카테고리 필터 (복수 선택 가능)") @RequestParam(required = false) List<StoreCategory> categories,
+                @Parameter(description = "분위기 필터 (복수 선택 가능)") @RequestParam(required = false) List<StoreMood> moods,
+                @Parameter(description = "대학(상권) ID 필터") @RequestParam(required = false) Long universityId,
+                @Parameter(description = "페이징 정보 (page, size, sort)") @PageableDefault(size = 10) Pageable pageable,
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
+        ) {
+                User user = principalDetails != null ? principalDetails.getUser() : null;
+                PageResponse<StoreResponse> response = storeService.getStores(keyword, categories, moods, universityId, pageable, user);
+                return ResponseEntity.ok(CommonResponse.success(response));
+        }
+
+        @Operation(summary = "[학생] 주위 상점 조회", description = "위도, 경도, 반경(km)을 기준으로 주위 상점을 조회합니다.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "상점 목록 조회 성공")
+        })
+        @GetMapping("/nearby")
+        public ResponseEntity<CommonResponse<List<StoreResponse>>> getNearbyStores(
+                @Parameter(description = "위도") @RequestParam Double latitude,
+                @Parameter(description = "경도") @RequestParam Double longitude,
+                @Parameter(description = "반경(km)") @RequestParam Double radius,
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
+        ) {
+                User user = principalDetails != null ? principalDetails.getUser() : null;
+                List<StoreResponse> response = storeService.getNearbyStores(latitude, longitude, radius, user);
+                return ResponseEntity.ok(CommonResponse.success(response));
+        }
+
         @Operation(summary = "[학생] 상점 신고", description = "특정 상점을 신고합니다.")
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "상점 신고 성공"),
@@ -181,17 +188,17 @@ public class StoreController {
                 return ResponseEntity.ok(CommonResponse.success(null));
         }
 
-    @Operation(summary = "[학생] 이번 주 핫한 가게 조회", description = "학생의 소속 대학에서 이번 주 찜이 가장 많이 늘어난 상점 Top 10을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "403", description = "권한 없음 (학생 아님/대학 미소속)", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
-    })
-    @GetMapping("/hot")
-    public ResponseEntity<CommonResponse<List<HotStoreResponse>>> getHotStores(
-            @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-        List<HotStoreResponse> response = storeService.getHotStores(principalDetails.getUser());
-        return ResponseEntity.ok(CommonResponse.success(response));
-    }
+        @Operation(summary = "[학생] 이번 주 핫한 가게 조회", description = "학생의 소속 대학에서 이번 주 찜이 가장 많이 늘어난 상점 Top 10을 조회합니다.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "조회 성공"),
+                @ApiResponse(responseCode = "403", description = "권한 없음 (학생 아님/대학 미소속)", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+        })
+        @GetMapping("/hot")
+        public ResponseEntity<CommonResponse<List<HotStoreResponse>>> getHotStores(
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
+        ) {
+                List<HotStoreResponse> response = storeService.getHotStores(principalDetails.getUser());
+                return ResponseEntity.ok(CommonResponse.success(response));
+        }
 
 }

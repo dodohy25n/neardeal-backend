@@ -37,7 +37,6 @@ public interface PartnershipRepository extends JpaRepository<Partnership, Long> 
             @Param("universityId") Long universityId
     );
 
-
     @Query("SELECT p FROM Partnership p " +
            "JOIN FETCH p.organization o " +
            "WHERE p.store.id IN :storeIds " +
@@ -45,6 +44,17 @@ public interface PartnershipRepository extends JpaRepository<Partnership, Long> 
            "AND p.startsAt <= :today AND p.endsAt >= :today")
     List<Partnership> findActivePartnershipsByStoreIdsAndUniversityId(
             @Param("storeIds") List<Long> storeIds,
+            @Param("universityId") Long universityId,
+            @Param("today") LocalDate today
+    );
+
+    @Query("SELECT COUNT(p) > 0 FROM Partnership p " +
+           "JOIN p.organization o " +
+           "WHERE p.store.id = :storeId " +
+           "AND o.university.id = :universityId " +
+           "AND p.startsAt <= :today AND p.endsAt >= :today")
+    boolean existsActivePartnership(
+            @Param("storeId") Long storeId,
             @Param("universityId") Long universityId,
             @Param("today") LocalDate today
     );
