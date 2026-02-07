@@ -18,6 +18,9 @@ public interface UserOrganizationRepository extends JpaRepository<UserOrganizati
 
     // 유저의 모든 소속 단체 조회
     List<UserOrganization> findAllByUser(User user);
+
+    // 유저의 소속 단체 조회 (학생회용)
+    Optional<UserOrganization> findByUser(User user);
     
     // 특정 카테고리의 조직에 속한 내역 조회 (JPQL)
     @Query("SELECT uo FROM UserOrganization uo JOIN uo.organization o WHERE uo.user = :user AND o.category = :category")
