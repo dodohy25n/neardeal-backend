@@ -24,9 +24,11 @@ create table user (
     role enum ('ROLE_ADMIN','ROLE_COUNCIL','ROLE_GUEST','ROLE_OWNER','ROLE_STUDENT') not null,
     social_type enum ('FIREBASE','GOOGLE','KAKAO','LOCAL','NAVER'),
     social_id varchar(255),
+    email varchar(255),
     deleted bit not null,
     deleted_at datetime(6),
-    constraint UK_user_username unique (username)
+    constraint UK_user_username unique (username),
+    constraint UK_user_email unique (email)
 );
 
 /* User Profiles */
@@ -40,9 +42,6 @@ create table council_profile (
 create table owner_profile (
     user_id bigint not null primary key,
     name varchar(255),
-    email varchar(255),
-    phone varchar(255),
-    constraint UK_owner_email unique (email),
     foreign key (user_id) references user (user_id)
 );
 

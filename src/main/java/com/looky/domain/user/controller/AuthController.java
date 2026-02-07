@@ -5,6 +5,7 @@ import com.looky.common.response.SwaggerErrorResponse;
 import com.looky.common.util.CookieUtil;
 import com.looky.domain.user.dto.*;
 import com.looky.domain.user.service.AuthService;
+import com.looky.domain.user.service.EmailVerificationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,27 +31,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
         private final AuthService authService;
+        private final EmailVerificationService emailVerificationService;
         private final CookieUtil cookieUtil;
-
-        @Operation(summary = "[학생] 학교 이메일 인증 발송", description ="이메일 인증 코드를 전송합니다.")
-        @PostMapping("email/send")
-        public ResponseEntity<CommonResponse<Void>> send(@Valid @RequestBody SendEmailCodeRequest request) {
-                authService.sendVerificationCode(request.getEmail());
-                return ResponseEntity.ok(CommonResponse.success(null));
-        }
-        
-        @Operation(summary = "[학생] 학교 이메일 인증 확인", description ="이메일 인증 코드를 검증합니다. (true: 검증 (일치) 완료, false: 검증 실패 (코드 불일치 및 이미 등록된 이메일)")
-        @PostMapping("email/verify")
-        public ResponseEntity<CommonResponse<Void>> verify(@Valid @RequestBody VerifyEmailCodeRequest request) {
-                authService.verifyCode(request.getEmail(), request.getCode());
-                return ResponseEntity.ok(CommonResponse.success(null));
-        }
-
-        @Operation(summary = "[공통] 아이디 중복 확인", description = "아이디 사용 가능 여부를 확인합니다. (true: 사용 가능, false: 중복)")
-        @GetMapping("/check-username")
-        public ResponseEntity<CommonResponse<Boolean>> checkUsernameAvailability(@RequestParam String username) {
-            return ResponseEntity.ok(CommonResponse.success(authService.checkUsernameAvailability(username)));
-        }
 
         @Operation(summary = "[학생] 학생 회원가입", description = "학생 회원을 등록합니다.")
         @PostMapping("/signup/student")
@@ -175,5 +157,61 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
                     .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                     .body(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[공통] 아이디 중복 확인", description = "아이디 사용 가능 여부를 확인합니다. (true: 사용 가능, false: 중복)")
+        @GetMapping("/check-username")
+        public ResponseEntity<CommonResponse<Boolean>> checkUsernameAvailability(@RequestParam String username) {
+                return ResponseEntity.ok(CommonResponse.success(authService.checkUsernameAvailability(username)));
+        }
+
+        @Operation(summary = "[공통] 회원 가입용 이메일 인증 발송", description = "회원 가입용 이메일 인증 코드를 전송합니다.")
+        @PostMapping("email/send-code")
+        public ResponseEntity<CommonResponse<Void>> send(@Valid @RequestBody SendEmailCodeRequest request) {
+                emailVerificationService.sendCode(request.getEmail(), request.getUniversityId());
+                return ResponseEntity.ok(CommonResponse.success(null));
+        }
+        
+        @Operation(summary = "[공통] 회원 가입용 이메일 인증 확인", description = "회원 가입용 이메일 인증 코드를 검증합니다. (true: 검증 (일치) 완료, false: 검증 실패 (코드 불일치 및 이미 등록된 이메일)")
+        @PostMapping("email/verify")
+        public ResponseEntity<CommonResponse<Void>> verify(@Valid @RequestBody VerifyEmailCodeRequest request) {
+                emailVerificationService.verifyCode(request.getEmail(), request.getCode());
+                return ResponseEntity.ok(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[공통] 아이디 찾기 - 인증번호 발송", description = "가입된 이메일로 인증번호를 발송합니다.")
+        @PostMapping("/find-id/send-code")
+        public ResponseEntity<CommonResponse<Void>> sendCodeForFindId(@RequestBody @Valid SendEmailCodeRequest request) {
+            authService.sendVerificationCodeForAccountRecovery(request.getEmail());
+            return ResponseEntity.ok(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[공통] 아이디 찾기 - 인증 확인 및 아이디 반환", description = "인증번호 검증 후 가입된 아이디를 반환합니다.")
+        @PostMapping("/find-id/verify")
+        public ResponseEntity<CommonResponse<String>> verifyCodeForFindId(@RequestBody @Valid VerifyEmailCodeRequest request) {
+            String username = authService.findUsernameByEmail(request.getEmail(), request.getCode());
+            return ResponseEntity.ok(CommonResponse.success(username));
+        }
+
+        @Operation(summary = "[공통] 비밀번호 찾기 - 인증번호 발송", description = "아이디와 이메일이 일치하는지 확인 후 인증번호를 발송합니다.")
+        @PostMapping("/find-password/send-code")
+        public ResponseEntity<CommonResponse<Void>> sendCodeForFindPassword(@RequestBody @Valid FindPasswordSendCodeRequest request) {
+            authService.sendVerificationCodeForPasswordReset(request.getUsername(), request.getEmail());
+            return ResponseEntity.ok(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[공통] 비밀번호 재설정 - 인증 확인 및 임시 토큰 반환", description = "인증번호 검증 후 비밀번호 재설정을 위한 임시 토큰을 반환합니다.")
+        @PostMapping("/find-password/verify")
+        public ResponseEntity<CommonResponse<String>> verifyCodeForFindPassword(@RequestBody @Valid VerifyEmailCodeRequest request) {
+            // 비밀번호 재설정 토큰 반환
+            String resetToken = authService.verifyCodeForPasswordReset(request.getEmail(), request.getCode());
+            return ResponseEntity.ok(CommonResponse.success(resetToken));
+        }
+
+        @Operation(summary = "[공통] 비밀번호 재설정", description = "비밀번호 재설정 토큰을 사용하여 새 비밀번호로 변경합니다.")
+        @PostMapping("/find-password/reset")
+        public ResponseEntity<CommonResponse<Void>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+            authService.resetPassword(request.getResetToken(), request.getNewPassword());
+            return ResponseEntity.ok(CommonResponse.success(null));
         }
 }

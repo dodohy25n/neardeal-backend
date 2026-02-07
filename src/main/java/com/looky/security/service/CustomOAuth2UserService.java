@@ -68,7 +68,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 존재하지 않으면 신규 회원가입
         User newSocialUser = User.builder()
                 .username(username)
-                .name(userInfo.getName())
                 .role(Role.ROLE_GUEST)
                 .socialType(SocialType.valueOf(userInfo.getProvider().toUpperCase()))
                 .socialId(userInfo.getProviderId())

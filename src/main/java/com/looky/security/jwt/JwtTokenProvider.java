@@ -66,6 +66,20 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // 비밀번호 재설정용 토큰 생성 (Role 없이 생성하여 로그인 불가)
+    public String createPasswordResetToken(Long userId) {
+        long now = System.currentTimeMillis();
+        // 10분 유효
+        long expiresIn = 10 * 60 * 1000L; 
+        return Jwts.builder()
+                .subject(String.valueOf(userId))
+                .claim(KEY_TYPE, "password_reset")
+                .issuedAt(new Date(now))
+                .expiration(new Date(now + expiresIn))
+                .signWith(secretKey, Jwts.SIG.HS256)
+                .compact();
+    }
+
     // 토큰에서 인증 정보 조회
     // DB 조회 없이 토큰 내의 정보만으로 UserDetails 생성
     public Authentication getAuthentication(String token) {

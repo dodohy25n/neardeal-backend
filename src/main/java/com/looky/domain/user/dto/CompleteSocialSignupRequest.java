@@ -25,5 +25,4 @@ public class CompleteSocialSignupRequest {
     // 점주
     private String name;
     private String email;
-    private String phone;
 }

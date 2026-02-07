@@ -15,6 +15,7 @@ import java.time.LocalDate;
 public class StudentSignupRequest {
     private String username; // 아이디 (이메일X)
     private String password;
+    private String email; 
     private String nickname;
     private Gender gender;
     private LocalDate birthDate;
@@ -22,4 +23,5 @@ public class StudentSignupRequest {
     private Long universityId;
     private Long collegeId; 
     private Long departmentId; 
+
 }

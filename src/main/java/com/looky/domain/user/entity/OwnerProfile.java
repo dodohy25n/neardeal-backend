@@ -19,16 +19,9 @@ public class OwnerProfile {
 
     private String name;
 
-    @Column(unique = true)
-    private String email;
-
-    private String phone;
-
     @Builder
-    public OwnerProfile(User user, String name, String email, String phone) {
+    public OwnerProfile(User user, String name) {
         this.user = user;
         this.name = name;
-        this.email = email;
-        this.phone = phone;
     }
 }

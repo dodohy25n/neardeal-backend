@@ -44,14 +44,18 @@ public class User extends BaseEntity {
     // 소셜 식별 값 (예: 카카오의 회원번호)
     private String socialId;
 
+    @Column(unique = true)
+    private String email; // 이메일 (학생, 점주 공통)
+
     // --- Soft Delete ---
     @Column(nullable = false)
     private boolean deleted = false;
 
     private LocalDateTime deletedAt;
 
+
     @Builder
-    public User(String username, String password, String name, String phone, Gender gender, LocalDate birthDate, Role role, SocialType socialType, String socialId) {
+    public User(String username, String password, Gender gender, LocalDate birthDate, Role role, SocialType socialType, String socialId, String email) {
         this.username = username;
         this.password = password;
         this.gender = gender;
@@ -59,6 +63,7 @@ public class User extends BaseEntity {
         this.role = role;
         this.socialType = socialType;
         this.socialId = socialId;
+        this.email = email;
     }
 
     // 소셜 가입 후 부족한 정보 완성 -> ROLE_GUEST에서 승격
@@ -88,5 +93,9 @@ public class User extends BaseEntity {
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
     }
 }
