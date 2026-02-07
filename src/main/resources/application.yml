@@ -31,13 +31,30 @@ spring:
         access-key: ${IAM_ACCESS_KEY}
         secret-key: ${IAM_SECRET_KEY}
 
+  # 메일 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+app:
+  email:
+    from: ${SPRING_MAIL_USERNAME}
+    verification:
+      ttl-minutes: 5
+
 # JWT 정책
 jwt:
   secret: ${JWT_SECRET}
   access-expiration: 3600000
   refresh-expiration: 1209600000
-
-
 
 # open api 설정
 open-api:
@@ -48,3 +65,4 @@ naver:
   maps:
     client-id: ${NAVER_MAP_CLIENT_ID}
     client-secret: ${NAVER_MAP_CLIENT_SECRET}
+
