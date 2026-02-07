@@ -292,7 +292,7 @@ INSERT INTO store_news_like (created_at, modified_at, store_news_id, user_id) VA
 (NOW(), NOW(), 1, 106), (NOW(), NOW(), 1, 107), (NOW(), NOW(), 1, 108), (NOW(), NOW(), 1, 109), (NOW(), NOW(), 1, 110),
 (NOW(), NOW(), 2, 101), (NOW(), NOW(), 2, 102), (NOW(), NOW(), 2, 103), (NOW(), NOW(), 2, 104), (NOW(), NOW(), 2, 105);
 
-INSERT INTO store_news_comment (created_at, modified_at, store_news_id, user_id, content) VALUES 
+INSERT INTO store_news_comment (id, created_at, modified_at, store_news_id, user_id, content) VALUES 
 (1, NOW(), NOW(), 1, 101, '오 먹으러 갈게요!'),
 (2, NOW(), NOW(), 1, 102, '무슨 메뉴인가요?'),
 (3, NOW(), NOW(), 2, 104, '헉 헛걸음할뻔');
