@@ -26,8 +26,8 @@ public class StudentProfile {
     private University university;
 
 
-    @Column(nullable = false)
-    private boolean isClubMember;
+    @Column
+    private Boolean isClubMember;
 
     @Builder
     public StudentProfile(User user, String nickname, University university, boolean isClubMember) {
