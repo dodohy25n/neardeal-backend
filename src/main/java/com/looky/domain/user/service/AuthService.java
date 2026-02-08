@@ -116,7 +116,7 @@ public class AuthService {
         return jwtTokenProvider.createPasswordResetToken(user.getId());
     }
 
-    // 비밀번호 재설정
+    // 비밀번호 재설정 (비밀번호 찾기)
     @Transactional
     public void resetPassword(String resetToken, String newPassword) {
         if (!jwtTokenProvider.validateToken(resetToken)) {
@@ -132,7 +132,11 @@ public class AuthService {
         Long userId = Long.valueOf(claims.getSubject());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-                
+
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new CustomException(ErrorCode.BAD_REQUEST, "이전 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
+        }
+
         user.updatePassword(passwordEncoder.encode(newPassword));
     }
 

@@ -47,6 +47,7 @@ public class MyPageService {
         user.updateUsername(request.getNewUsername());
     }
 
+    // 비밀번호 재설정 (비밀번호 변경)
     @Transactional
     public void changePassword(Long userId, ChangePasswordRequest request) {
         User user = userRepository.findById(userId)
@@ -54,6 +55,10 @@ public class MyPageService {
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.BAD_REQUEST, "이전 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
         }
 
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
