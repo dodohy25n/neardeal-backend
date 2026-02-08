@@ -13,6 +13,8 @@ public class PartnershipResponse {
     private final String universityName;
     private final OrganizationCategory category;
     private final String benefit;
+    private final Long storeId;
+    private final String storeName;
 
     public PartnershipResponse(Partnership partnership) {
         this.id = partnership.getId();
@@ -21,5 +23,7 @@ public class PartnershipResponse {
         this.universityName = partnership.getOrganization().getUniversity().getName();
         this.category = partnership.getOrganization().getCategory();
         this.benefit = partnership.getBenefit();
+        this.storeId = partnership.getStore().getId();
+        this.storeName = partnership.getStore().getName();
     }
 }
