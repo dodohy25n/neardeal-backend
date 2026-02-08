@@ -237,16 +237,16 @@ INSERT INTO coupon (coupon_id, created_at, modified_at, title, description, issu
 
 -- 6. Events
 -- Upcoming
-INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status) VALUES 
-(1, NOW(), NOW(), '2026 전북대학교 대동제', '2026년 전북대 대동제에 여러분을 초대합니다!', 35.846833, 127.129360, '2026-05-20 10:00:00', '2026-05-22 23:00:00', 'UPCOMING');
+INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status, university_id) VALUES 
+(1, NOW(), NOW(), '2026 전북대학교 대동제', '2026년 전북대 대동제에 여러분을 초대합니다!', 35.846833, 127.129360, '2026-05-20 10:00:00', '2026-05-22 23:00:00', 'UPCOMING', 1);
 
 -- Live
-INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status) VALUES 
-(2, NOW(), NOW(), '소프트웨어공학과 신입생 오리엔테이션', '신입생 환영회', 35.846100, 127.129600, '2026-02-07 09:00:00', '2026-02-07 18:00:00', 'LIVE');
+INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status, university_id) VALUES 
+(2, NOW(), NOW(), '소프트웨어공학과 신입생 오리엔테이션', '신입생 환영회', 35.846100, 127.129600, '2026-02-07 09:00:00', '2026-02-07 18:00:00', 'LIVE', 1);
 
 -- Ended
-INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status) VALUES 
-(3, NOW(), NOW(), '2025 졸업작품 전시회', '고생하셨습니다', 35.846100, 127.129600, '2025-11-20 09:00:00', '2025-11-22 18:00:00', 'ENDED');
+INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status, university_id) VALUES 
+(3, NOW(), NOW(), '2025 졸업작품 전시회', '고생하셨습니다', 35.846100, 127.129600, '2025-11-20 09:00:00', '2025-11-22 18:00:00', 'ENDED', 1);
 
 
 INSERT INTO event_types (event_id, event_type) VALUES (1, 'SCHOOL_EVENT'), (1, 'PERFORMANCE'), (2, 'COMMUNITY'), (3, 'SCHOOL_EVENT');
@@ -258,16 +258,16 @@ INSERT INTO event_image (created_at, modified_at, event_id, image_url, order_ind
 
 -- New Events (Feb 7-14)
 -- 4. Fleamarket (Feb 8 11:00 - Feb 9 18:00)
-INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status) VALUES 
-(4, NOW(), NOW(), '전북대 벼룩시장', '안쓰는 물건 싸게 득템하세요!', 35.846833, 127.129360, '2026-02-08 11:00:00', '2026-02-09 18:00:00', 'UPCOMING');
+INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status, university_id) VALUES 
+(4, NOW(), NOW(), '전북대 벼룩시장', '안쓰는 물건 싸게 득템하세요!', 35.846833, 127.129360, '2026-02-08 11:00:00', '2026-02-09 18:00:00', 'UPCOMING', 1);
 
 -- 5. SE Opening Party (Feb 10 18:00 - 22:00)
-INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status) VALUES 
-(5, NOW(), NOW(), '소프트웨어공학과 개강총회', '2026학년도 1학기 개강총회입니다.', 35.846500, 127.129000, '2026-02-10 18:00:00', '2026-02-10 22:00:00', 'UPCOMING');
+INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status, university_id) VALUES 
+(5, NOW(), NOW(), '소프트웨어공학과 개강총회', '2026학년도 1학기 개강총회입니다.', 35.846500, 127.129000, '2026-02-10 18:00:00', '2026-02-10 22:00:00', 'UPCOMING', 1);
 
 -- 6. Valentine Giveaway (Feb 13 10:00 - Feb 14 18:00)
-INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status) VALUES 
-(6, NOW(), NOW(), '발렌타인 데이 초콜릿 나눔', '달콤한 초콜릿 받아가세요~', 35.847000, 127.129500, '2026-02-13 10:00:00', '2026-02-14 18:00:00', 'UPCOMING');
+INSERT INTO events (event_id, created_at, modified_at, title, description, latitude, longitude, start_date_time, end_date_time, status, university_id) VALUES 
+(6, NOW(), NOW(), '발렌타인 데이 초콜릿 나눔', '달콤한 초콜릿 받아가세요~', 35.847000, 127.129500, '2026-02-13 10:00:00', '2026-02-14 18:00:00', 'UPCOMING', 1);
 
 INSERT INTO event_types (event_id, event_type) VALUES (4, 'COMMUNITY'), (5, 'SCHOOL_EVENT'), (6, 'COMMUNITY');
 INSERT INTO event_image (created_at, modified_at, event_id, image_url, order_index) VALUES 

@@ -285,12 +285,14 @@ create table events (
     longitude double,
     start_date_time datetime(6) not null,
     end_date_time datetime(6) not null,
-    status enum ('ENDED','LIVE','UPCOMING') not null
+    status enum ('ENDED','LIVE','UPCOMING') not null,
+    university_id bigint,
+    foreign key (university_id) references university (university_id)
 );
 
 create table event_types (
     event_id bigint not null,
-    event_type enum ('COMMUNITY','FLEA_MARKET','FOOD_EVENT','PERFORMANCE','POPUP_STORE','SCHOOL_EVENT', 'NOTICE'),
+    event_type enum ('COMMUNITY','FLEA_MARKET','FOOD_EVENT','PERFORMANCE','POPUP_STORE','SCHOOL_EVENT'),
     foreign key (event_id) references events (event_id)
 );
 

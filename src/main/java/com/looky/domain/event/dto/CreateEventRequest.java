@@ -40,4 +40,8 @@ public class CreateEventRequest {
     @NotNull(message = "종료일시는 필수입니다.")
     @Schema(description = "이벤트 종료일시", example = "2024-03-01T18:00:00")
     private LocalDateTime endDateTime;
+
+    @NotNull(message = "대학교 ID는 필수입니다.")
+    @Schema(description = "대학교 ID", example = "1")
+    private Long universityId; // 0은 모든 학교 대상
 }

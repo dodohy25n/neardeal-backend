@@ -1,5 +1,5 @@
 package com.looky.domain.event.entity;
-
+import com.looky.domain.organization.entity.University;
 import com.looky.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -36,6 +36,10 @@ public class Event extends BaseEntity {
     @Column(name = "event_type")
     private Set<EventType> eventTypes = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "university_id")
+    private University university;
+
     private Double latitude;
 
     private Double longitude;
@@ -54,7 +58,7 @@ public class Event extends BaseEntity {
     private List<EventImage> images = new ArrayList<>();
 
     @Builder
-    public Event(String title, String description, Set<EventType> eventTypes, Double latitude, Double longitude, LocalDateTime startDateTime, LocalDateTime endDateTime, EventStatus status) {
+    public Event(String title, String description, Set<EventType> eventTypes, Double latitude, Double longitude, LocalDateTime startDateTime, LocalDateTime endDateTime, EventStatus status, University university) {
         this.title = title;
         this.description = description;
         this.eventTypes = eventTypes != null ? eventTypes : new HashSet<>();
@@ -63,6 +67,7 @@ public class Event extends BaseEntity {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.status = status != null ? status : EventStatus.UPCOMING;
+        this.university = university;
     }
 
     public void update(String title, String description, Set<EventType> eventTypes, Double latitude, Double longitude, LocalDateTime startDateTime, LocalDateTime endDateTime, EventStatus status) {

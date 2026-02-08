@@ -13,6 +13,8 @@ import com.looky.domain.event.entity.EventStatus;
 import com.looky.domain.event.entity.EventType;
 import com.looky.domain.event.repository.EventRepository;
 import com.looky.domain.event.repository.EventSpecification;
+import com.looky.domain.organization.entity.University;
+import com.looky.domain.organization.repository.UniversityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -33,10 +34,15 @@ import java.util.List;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final UniversityRepository universityRepository;
     private final S3Service s3Service;
 
     @Transactional
     public Long createEvent(CreateEventRequest request, List<MultipartFile> images) throws IOException {
+        
+        University university = universityRepository.findById(request.getUniversityId())
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "대학교를 찾을 수 없습니다."));
+
         Event event = Event.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -46,6 +52,7 @@ public class EventService {
                 .startDateTime(request.getStartDateTime())
                 .endDateTime(request.getEndDateTime())
                 .status(EventStatus.UPCOMING)
+                .university(university)
                 .build();
 
         // 이미지 업로드 및 저장
@@ -61,10 +68,11 @@ public class EventService {
         return EventResponse.from(event);
     }
 
-    public PageResponse<EventResponse> getEvents(String keyword, List<EventType> eventTypes, EventStatus status, Pageable pageable) {
+    public PageResponse<EventResponse> getEvents(String keyword, List<EventType> eventTypes, EventStatus status, Long universityId, Pageable pageable) {
         Specification<Event> spec = Specification.where(EventSpecification.hasKeyword(keyword))
                 .and(EventSpecification.hasEventTypes(eventTypes))
-                .and(EventSpecification.hasStatus(status));
+                .and(EventSpecification.hasStatus(status))
+                .and(EventSpecification.hasUniversityId(universityId));
 
         Page<Event> eventPage = eventRepository.findAll(spec, pageable);
         Page<EventResponse> responsePage = eventPage.map(EventResponse::from);

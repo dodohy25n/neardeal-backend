@@ -7,6 +7,5 @@ public enum EventType {
     SCHOOL_EVENT,  // 학교 이벤트
     FLEA_MARKET,   // 플리마켓
     PERFORMANCE,   // 공연/버스킹
-    COMMUNITY,     // 커뮤니티 / 참여
-    NOTICE         // 루키 공지
+    COMMUNITY      // 커뮤니티 / 참여
 }

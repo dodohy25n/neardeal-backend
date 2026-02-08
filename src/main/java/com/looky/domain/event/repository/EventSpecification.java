@@ -38,4 +38,13 @@ public class EventSpecification {
             return cb.equal(root.get("status"), status);
         };
     }
+
+    public static Specification<Event> hasUniversityId(Long universityId) {
+        return (root, query, cb) -> {
+            if (universityId == null) {
+                return null;
+            }
+            return cb.equal(root.get("university").get("id"), universityId);
+        };
+    }
 }

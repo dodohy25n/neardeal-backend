@@ -51,8 +51,9 @@ public class EventController {
             @Parameter(description = "검색 키워드 (제목)") @RequestParam(required = false) String keyword,
             @Parameter(description = "이벤트 타입 필터 (복수 선택 가능)") @RequestParam(required = false) List<EventType> eventTypes,
             @Parameter(description = "상태 필터") @RequestParam(required = false) EventStatus status,
+            @Parameter(description = "대학 ID") @RequestParam(required = false) Long universityId,
             @Parameter(description = "페이징 정보") @PageableDefault(size = 10) Pageable pageable) {
-        PageResponse<EventResponse> response = eventService.getEvents(keyword, eventTypes, status, pageable);
+        PageResponse<EventResponse> response = eventService.getEvents(keyword, eventTypes, status, universityId, pageable);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 }
