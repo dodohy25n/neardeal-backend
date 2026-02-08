@@ -290,7 +290,7 @@ create table events (
 
 create table event_types (
     event_id bigint not null,
-    event_type enum ('COMMUNITY','FLEA_MARKET','FOOD_EVENT','PERFORMANCE','POPUP_STORE','SCHOOL_EVENT'),
+    event_type enum ('COMMUNITY','FLEA_MARKET','FOOD_EVENT','PERFORMANCE','POPUP_STORE','SCHOOL_EVENT', 'NOTICE'),
     foreign key (event_id) references events (event_id)
 );
 
