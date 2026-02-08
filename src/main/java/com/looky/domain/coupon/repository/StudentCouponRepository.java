@@ -15,7 +15,11 @@ import java.util.Optional;
 public interface StudentCouponRepository extends JpaRepository<StudentCoupon, Long> {
     Integer countByCouponAndUser(Coupon coupon, User user);
 
-    List<StudentCoupon> findByUser(User user);
+    @Query("SELECT sc FROM StudentCoupon sc " +
+            "JOIN FETCH sc.coupon c " +
+            "JOIN FETCH c.store " +
+            "WHERE sc.user = :user")
+    List<StudentCoupon> findByUser(@Param("user") User user);
 
     Optional<StudentCoupon> findByIdAndUser(Long id, User user);
 

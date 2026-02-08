@@ -1,6 +1,8 @@
 package com.looky.domain.coupon.dto;
 
+import com.looky.domain.coupon.entity.Coupon;
 import com.looky.domain.coupon.entity.StudentCoupon;
+import com.looky.domain.coupon.entity.CouponBenefitType;
 import com.looky.domain.coupon.entity.CouponUsageStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,14 +16,25 @@ public class IssueCouponResponse {
     private CouponUsageStatus status;
     private LocalDateTime issuedAt;
     private LocalDateTime expiresAt;
+    private String title;
+    private String description;
+    private CouponBenefitType benefitType;
+    private String benefitValue;
+    private String storeName;
 
     public static IssueCouponResponse from(StudentCoupon studentCoupon) {
+        Coupon coupon = studentCoupon.getCoupon();
         return IssueCouponResponse.builder()
                 .studentCouponId(studentCoupon.getId())
                 .couponCode(studentCoupon.getVerificationCode())
                 .status(studentCoupon.getStatus())
                 .issuedAt(studentCoupon.getIssuedAt())
                 .expiresAt(studentCoupon.getExpiresAt())
+                .title(coupon.getTitle())
+                .description(coupon.getDescription())
+                .benefitType(coupon.getBenefitType())
+                .benefitValue(coupon.getBenefitValue())
+                .storeName(coupon.getStore().getName())
                 .build();
     }
 }
