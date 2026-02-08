@@ -81,7 +81,7 @@ public class MyPageService {
             updateUserOrganization(user, request.getDepartmentId(), OrganizationCategory.DEPARTMENT);
         }
 
-        profile.update(request.getNickname(), request.getIsClubMember() != null ? request.getIsClubMember() : profile.isClubMember(), null);
+        profile.update(request.getNickname(), request.getIsClubMember() != null ? request.getIsClubMember() : profile.getIsClubMember(), null);
     }
 
     @Transactional
@@ -103,7 +103,7 @@ public class MyPageService {
         userOrganizationRepository.deleteByUserAndOrganizationCategory(user, OrganizationCategory.COLLEGE);
         userOrganizationRepository.deleteByUserAndOrganizationCategory(user, OrganizationCategory.DEPARTMENT);
 
-        profile.update(null, profile.isClubMember(), university);
+        profile.update(null, profile.getIsClubMember(), university);
     }
 
     private void updateUserOrganization(User user, Long organizationId, OrganizationCategory category) {

@@ -30,14 +30,14 @@ public class StudentProfile {
     private Boolean isClubMember;
 
     @Builder
-    public StudentProfile(User user, String nickname, University university, boolean isClubMember) {
+    public StudentProfile(User user, String nickname, University university, Boolean isClubMember) {
         this.user = user;
         this.nickname = nickname;
         this.university = university;
         this.isClubMember = isClubMember;
     }
 
-    public void update(String nickname, boolean isClubMember, University university) {
+    public void update(String nickname, Boolean isClubMember, University university) {
         if (nickname != null) {
             this.nickname = nickname;
         }
